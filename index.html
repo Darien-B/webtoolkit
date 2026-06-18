@@ -15,21 +15,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
   
   <style>
-    /* CSS Variables / Theme */
+    /* CSS Variables / Theme — Stacq Brand Palette */
     :root {
       --bg-dark: #070913;
       --bg-card: rgba(17, 24, 39, 0.7);
       --bg-input: #111827;
       --border-color: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(99, 102, 241, 0.4);
+      --border-focus: rgba(235, 123, 87, 0.4);
       --text-primary: #f3f4f6;
       --text-secondary: #9ca3af;
       --text-muted: #6b7280;
       
-      --accent-primary: #6366f1;
-      --accent-secondary: #a855f7;
-      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      --accent-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+      --accent-primary: #eb7b57;
+      --accent-secondary: #f5a689;
+      --accent-gradient: linear-gradient(135deg, #eb7b57 0%, #f5a689 100%);
+      --accent-glow: 0 0 20px rgba(235, 123, 87, 0.15);
       
       --success: #10b981;
       --success-bg: rgba(16, 185, 129, 0.1);
@@ -196,7 +196,7 @@
     .tab-btn.active {
       background: var(--accent-gradient);
       color: #fff;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+      box-shadow: 0 4px 12px rgba(235, 123, 87, 0.25);
     }
     
     /* Active Tab Pane View */
@@ -291,7 +291,7 @@
       border-radius: 50%;
       background: var(--accent-gradient);
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 0 10px rgba(235, 123, 87, 0.4);
       transition: var(--transition);
     }
     
@@ -319,7 +319,7 @@
     
     .dropzone:hover, .dropzone.dragover {
       border-color: var(--accent-primary);
-      background: rgba(99, 102, 241, 0.05);
+      background: rgba(235, 123, 87, 0.05);
       box-shadow: var(--accent-glow);
     }
     
@@ -337,7 +337,7 @@
     
     .dropzone:hover .icon-container {
       transform: translateY(-5px);
-      background: rgba(99, 102, 241, 0.1);
+      background: rgba(235, 123, 87, 0.1);
       color: var(--accent-secondary);
     }
     
@@ -433,7 +433,7 @@
     
     .text-input:focus {
       border-color: var(--accent-primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      box-shadow: 0 0 0 3px rgba(235, 123, 87, 0.15);
     }
     
     /* Buttons */
@@ -470,7 +470,7 @@
       background: var(--accent-gradient);
       opacity: 0.9;
       transform: translateY(-1px);
-      box-shadow: 0 0 25px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 0 25px rgba(235, 123, 87, 0.3);
     }
     
     .btn-danger {
@@ -640,7 +640,7 @@
       background: var(--accent-gradient);
       color: #fff;
       border-color: transparent;
-      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+      box-shadow: 0 4px 10px rgba(235, 123, 87, 0.2);
     }
     
     .icon-btn.btn-action-danger:hover {
@@ -854,7 +854,7 @@
       line-height: 1.4;
     }
     
-    .log-line.system { color: #818cf8; } /* Purple */
+    .log-line.system { color: #f5a689; } /* Stacq coral light */
     .log-line.success { color: #34d399; } /* Green */
     .log-line.warning { color: #fbbf24; } /* Amber */
     .log-line.error { color: #f87171; } /* Red */
@@ -964,8 +964,8 @@
     
     .grabber-card.selected {
       border-color: var(--accent-primary);
-      background: rgba(99, 102, 241, 0.05);
-      box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+      background: rgba(235, 123, 87, 0.05);
+      box-shadow: 0 0 12px rgba(235, 123, 87, 0.15);
     }
     
     .grabber-checkbox-container {
@@ -1131,8 +1131,8 @@
     
     /* Section color coding */
     .section-hero .section-group-icon { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-    .section-gallery .section-group-icon { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
-    .section-slider .section-group-icon { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+    .section-gallery .section-group-icon { background: rgba(235, 123, 87, 0.15); color: #eb7b57; }
+    .section-slider .section-group-icon { background: rgba(245, 166, 137, 0.15); color: #f5a689; }
     .section-content .section-group-icon { background: rgba(16, 185, 129, 0.15); color: #10b981; }
     .section-sidebar .section-group-icon { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
     .section-header .section-group-icon { background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
@@ -1367,7 +1367,7 @@
 
     .csv-upload-zone:hover, .csv-upload-zone.dragover {
       border-color: var(--accent-primary);
-      background: rgba(99, 102, 241, 0.05);
+      background: rgba(235, 123, 87, 0.05);
       box-shadow: var(--accent-glow);
     }
 
@@ -1385,7 +1385,7 @@
 
     .csv-upload-zone:hover .icon-container {
       transform: translateY(-5px);
-      background: rgba(99, 102, 241, 0.1);
+      background: rgba(235, 123, 87, 0.1);
     }
 
     .csv-upload-zone input[type="file"] {
@@ -1443,7 +1443,7 @@
 
     .col-status-active { background: rgba(16,185,129,0.15); color: #10b981; }
     .col-status-skipped { background: rgba(245,158,11,0.15); color: #f59e0b; }
-    .col-status-auto { background: rgba(99,102,241,0.15); color: #6366f1; }
+    .col-status-auto { background: rgba(235,123,87,0.15); color: #eb7b57; }
 
     .scraper-section-card {
       background: rgba(255, 255, 255, 0.02);
@@ -1483,8 +1483,8 @@
       font-weight: 700;
       padding: 1px 6px;
       border-radius: 4px;
-      background: rgba(99,102,241,0.15);
-      color: #818cf8;
+      background: rgba(235,123,87,0.15);
+      color: #f5a689;
       text-transform: uppercase;
       flex-shrink: 0;
     }
@@ -1532,7 +1532,7 @@
 
     .mapping-row select:focus {
       border-color: var(--accent-primary);
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+      box-shadow: 0 0 0 3px rgba(235,123,87,0.15);
     }
 
     .mapping-row.auto-mapped {
@@ -1805,7 +1805,7 @@
     }
 
     .mapped-item.is-auto {
-      background: rgba(99,102,241,0.1);
+      background: rgba(235,123,87,0.1);
       color: var(--accent-primary);
     }
 
@@ -1850,8 +1850,8 @@
 
     /* How-to-Use Instruction Panels */
     .how-to-use {
-      background: rgba(99, 102, 241, 0.04);
-      border: 1px solid rgba(99, 102, 241, 0.15);
+      background: rgba(235, 123, 87, 0.04);
+      border: 1px solid rgba(235, 123, 87, 0.15);
       border-radius: var(--radius-lg);
       overflow: hidden;
       transition: var(--transition);
@@ -1868,7 +1868,7 @@
     }
 
     .how-to-use-header:hover {
-      background: rgba(99, 102, 241, 0.06);
+      background: rgba(235, 123, 87, 0.06);
     }
 
     .how-to-use-header .material-symbols-outlined {
@@ -4570,7 +4570,7 @@
           card.onclick = () => toggleGrabberCardSelection(imgIdx);
           
           const previewSrc = item.absoluteUrl;
-          const webpBadge = item.isWebP ? '<span style="position:absolute;top:6px;right:6px;z-index:10;background:rgba(99,102,241,0.9);color:#fff;font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">WEBP</span>' : '';
+          const webpBadge = item.isWebP ? '<span style="position:absolute;top:6px;right:6px;z-index:10;background:rgba(235,123,87,0.9);color:#fff;font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:4px;">WEBP</span>' : '';
           
           card.innerHTML = `
             <div class="grabber-checkbox-container">
@@ -5450,7 +5450,7 @@
           padding: 0.3rem 0.5rem;
           border-radius: 4px;
         }
-        h1 { font-size: 1.6rem; border-left: 4px solid #6366f1; padding-left: 0.75rem; }
+        h1 { font-size: 1.6rem; border-left: 4px solid #eb7b57; padding-left: 0.75rem; }
         h2 { font-size: 1.3rem; border-left: 3px solid #8b5cf6; padding-left: 0.75rem; }
         h3 { font-size: 1.15rem; border-left: 3px solid #a78bfa; padding-left: 0.75rem; }
         h4 { font-size: 1.05rem; border-left: 2px solid #c4b5fd; padding-left: 0.75rem; }
@@ -5465,7 +5465,7 @@
         ul, ol { margin: 0.5rem 0 0.5rem 1.5rem; }
         li { margin: 0.2rem 0; }
         
-        a { color: #6366f1; text-decoration: underline; }
+        a { color: #eb7b57; text-decoration: underline; }
         strong, b { font-weight: 700; }
         em, i { font-style: italic; }
         
@@ -5494,9 +5494,9 @@
         
         /* Hover highlight */
         .wt-hover-highlight {
-          outline: 2px dashed #6366f1 !important;
+          outline: 2px dashed #eb7b57 !important;
           outline-offset: 2px !important;
-          background: rgba(99,102,241,0.12) !important;
+          background: rgba(235,123,87,0.12) !important;
         }
         /* Selected highlight */
         .wt-selected-highlight {
