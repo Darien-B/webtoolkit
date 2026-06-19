@@ -3982,6 +3982,11 @@
     let lastWorkingProxy = null; // Remember which proxy worked last
 
     // Helper: fetch via racing proxies (fast) with direct-first strategy
+    // Stacq self-hosted proxy URL (auto-detect environment)
+    const STACQ_PROXY_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? null  // Use local proxy instead when running locally
+      : 'https://app.stacq.io/api/cors-proxy';
+
     async function fetchWithProxyFallback(targetUrl, options = {}) {
       // 1. Try local proxy first (most reliable — no CORS issues)
       try {
@@ -3994,10 +3999,26 @@
           return { response: localResp, proxyName: 'local-proxy' };
         }
       } catch (e) {
-        // Local proxy not running, fall through to external proxies
+        // Local proxy not running, fall through
       }
 
-      // 2. Try direct fetch (works for some CDNs and when running from localhost)
+      // 2. Try Stacq self-hosted proxy (reliable, always available in production)
+      if (STACQ_PROXY_BASE) {
+        try {
+          const stacqProxyUrl = `${STACQ_PROXY_BASE}?url=${encodeURIComponent(targetUrl)}`;
+          const stacqResp = await fetch(stacqProxyUrl, {
+            signal: AbortSignal.timeout(15000),
+            ...options
+          });
+          if (stacqResp.ok) {
+            return { response: stacqResp, proxyName: 'stacq-proxy' };
+          }
+        } catch (e) {
+          // Stacq proxy unavailable, fall through to external proxies
+        }
+      }
+
+      // 3. Try direct fetch (works for some CDNs and when running from localhost)
       try {
         const directResponse = await fetch(targetUrl, {
           signal: AbortSignal.timeout(5000),
@@ -4011,7 +4032,7 @@
         // Direct failed, expected for most cross-origin requests
       }
       
-      // 3. If we know a working proxy, try it first (fast path)
+      // 4. If we know a working proxy, try it first (fast path)
       if (lastWorkingProxy) {
         try {
           const proxyUrl = lastWorkingProxy.buildUrl(targetUrl);
@@ -4027,7 +4048,7 @@
         }
       }
       
-      // 4. Race ALL external proxies simultaneously - first success wins
+      // 5. Race ALL external proxies simultaneously - first success wins
       const proxyAttempts = CORS_PROXIES.map(proxy => {
         const proxyUrl = proxy.buildUrl(targetUrl);
         return fetch(proxyUrl, {
@@ -4046,7 +4067,7 @@
         // All external proxies failed
       }
       
-      // 5. Last resort: allorigins JSON endpoint
+      // 6. Last resort: allorigins JSON endpoint
       try {
         const jsonUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
         const jsonResp = await fetch(jsonUrl, { signal: AbortSignal.timeout(15000) });
