@@ -2629,6 +2629,7 @@
                       </label>
                       <select id="scraper-extract-mode" onchange="updateExtractPreview()" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); padding: 0.4rem; font-size: 0.8rem; margin-bottom: 0.4rem;">
                         <option value="full">Full text</option>
+                        <option value="link_href">Link URL (href)</option>
                         <option value="numbers">Numbers only</option>
                         <option value="before">Text before...</option>
                         <option value="after">Text after...</option>
@@ -5573,6 +5574,13 @@
     var texts = selectedElements.map(function(s) { return s.textContent.trim(); }).filter(Boolean);
     var combinedText = texts.join('\\n\\n');
     var lastEl = selectedElements[selectedElements.length - 1];
+    // Find the closest href: check the element itself, then walk up to find an <a>
+    var href = '';
+    if (lastEl) {
+      if (lastEl.href) { href = lastEl.href; }
+      else if (lastEl.closest && lastEl.closest('a')) { href = lastEl.closest('a').href || ''; }
+      else if (lastEl.querySelector && lastEl.querySelector('a[href]')) { href = lastEl.querySelector('a[href]').href || ''; }
+    }
     window.parent.postMessage({
       type: 'wt-element-selected',
       selectors: selectors,
@@ -5580,6 +5588,7 @@
       text: combinedText.substring(0, 2000),
       html: selectedElements.map(function(s) { return s.innerHTML; }).join(''),
       tag: lastEl ? lastEl.tagName : '',
+      href: href,
       count: selectedElements.length,
       parentSelector: lastEl && lastEl.parentElement ? getSelector(lastEl.parentElement) : '',
       firstChildSelector: lastEl && lastEl.children.length > 0 ? getSelector(lastEl.children[0]) : ''
@@ -5668,6 +5677,7 @@
           text: e.data.text,
           html: e.data.html,
           tag: e.data.tag,
+          href: e.data.href || '',
           count: e.data.count || 1,
           parentSelector: e.data.parentSelector,
           firstChildSelector: e.data.firstChildSelector,
@@ -5724,10 +5734,22 @@
 
     // Confirm mapping: assign selected element to chosen column
     // Apply an extraction pattern to raw text
-    function applyExtractPattern(text, pattern) {
+    function applyExtractPattern(text, pattern, element) {
       if (!pattern || pattern.mode === 'full') return text;
       const t = text.trim();
       switch (pattern.mode) {
+        case 'link_href': {
+          // Extract href from an element (used during bulk scrape)
+          if (element) {
+            if (element.href) return element.href;
+            if (element.closest && element.closest('a')) return element.closest('a').href || '';
+            const innerA = element.querySelector && element.querySelector('a[href]');
+            if (innerA) return innerA.href || '';
+          }
+          // Fallback: try to find a URL in the text
+          const urlMatch = t.match(/https?:\/\/[^\s"'<>]+/);
+          return urlMatch ? urlMatch[0] : '';
+        }
         case 'numbers': {
           const m = t.match(/[\d,\.]+/);
           return m ? m[0] : t;
@@ -5773,7 +5795,9 @@
       const previewText = document.getElementById('scraper-extract-preview-text');
 
       // Show/hide param inputs based on mode
-      if (mode === 'before' || mode === 'after') {
+      if (mode === 'link_href') {
+        paramsDiv.style.display = 'none';
+      } else if (mode === 'before' || mode === 'after') {
         paramsDiv.style.display = 'block';
         param1.placeholder = mode === 'before' ? 'Extract text before...' : 'Extract text after...';
         param2.style.display = 'none';
@@ -5792,14 +5816,21 @@
 
       // Generate live preview
       if (selectedIframeElement && mode !== 'full') {
-        const pattern = {
-          mode,
-          param1: param1.value,
-          param2: param2.value,
-        };
-        const result = applyExtractPattern(selectedIframeElement.text, pattern);
-        previewText.textContent = result || '(no match)';
-        previewDiv.style.display = 'block';
+        if (mode === 'link_href') {
+          // Show the href directly from the selected element
+          const href = selectedIframeElement.href || '';
+          previewText.textContent = href || '(no link found on this element)';
+          previewDiv.style.display = 'block';
+        } else {
+          const pattern = {
+            mode,
+            param1: param1.value,
+            param2: param2.value,
+          };
+          const result = applyExtractPattern(selectedIframeElement.text, pattern);
+          previewText.textContent = result || '(no match)';
+          previewDiv.style.display = 'block';
+        }
       } else {
         previewDiv.style.display = 'none';
       }
@@ -5814,12 +5845,14 @@
       // Get extraction pattern
       const mode = document.getElementById('scraper-extract-mode').value;
       const extractPattern = { mode };
-      if (mode !== 'full' && mode !== 'numbers') {
+      if (mode !== 'full' && mode !== 'numbers' && mode !== 'link_href') {
         extractPattern.param1 = document.getElementById('scraper-extract-param1').value;
         extractPattern.param2 = document.getElementById('scraper-extract-param2').value;
       }
 
-      const previewText = applyExtractPattern(selectedIframeElement.text, extractPattern);
+      const previewText = mode === 'link_href'
+        ? (selectedIframeElement.href || '(no link)')
+        : applyExtractPattern(selectedIframeElement.text, extractPattern);
 
       const outputFormat = document.getElementById('scraper-output-format').value;
 
@@ -6453,8 +6486,14 @@
                 });
 
                 if (mapping.extractPattern && mapping.extractPattern.mode !== 'full') {
-                  const combinedText = parts.map(el => el.textContent.trim()).join('\n');
-                  row[h.name] = applyExtractPattern(combinedText, mapping.extractPattern);
+                  if (mapping.extractPattern.mode === 'link_href') {
+                    // Extract href from the first matched element
+                    const el = parts[0];
+                    row[h.name] = applyExtractPattern(el.textContent, mapping.extractPattern, el);
+                  } else {
+                    const combinedText = parts.map(el => el.textContent.trim()).join('\n');
+                    row[h.name] = applyExtractPattern(combinedText, mapping.extractPattern);
+                  }
                 } else {
                   // Deduplicate identical parts (from multi-selector matches)
                   const uniqueParts = extractedParts.filter((s, i) => i === 0 || s !== extractedParts[i - 1]);
