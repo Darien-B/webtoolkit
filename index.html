@@ -3317,9 +3317,13 @@
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
         
+        // Cap at 0.99 to force lossy encoding — quality 1.0 triggers
+        // lossless WebP in Chrome/Edge which produces larger files
+        const clampedQuality = Math.min(quality, 0.99);
+        
         canvas.toBlob((blob) => {
           resolve(blob);
-        }, 'image/webp', quality);
+        }, 'image/webp', clampedQuality);
       });
     }
 
