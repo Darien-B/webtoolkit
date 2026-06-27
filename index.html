@@ -4238,6 +4238,9 @@
     
     let lastWorkingProxy = null; // Remember which proxy worked last
 
+    // Helper: delay between requests to avoid rate-limiting the CORS proxy
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
     // Helper: fetch via racing proxies (fast) with direct-first strategy
     // Stacq self-hosted proxy URL (auto-detect environment)
     const STACQ_PROXY_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
@@ -5040,6 +5043,9 @@
         
         const pct = Math.round(((i + 1) / selected.length) * 100);
         progressBar.style.width = `${pct}%`;
+
+        // Throttle to avoid rate-limiting the CORS proxy
+        if (i < selected.length - 1) await delay(500);
       }
       
       if (successCount > 0) {
@@ -5331,6 +5337,9 @@
         
         const pct = Math.round(((i + 1) / urlsToScan.length) * 100);
         progressBar.style.width = `${pct}%`;
+
+        // Throttle to avoid rate-limiting the CORS proxy
+        if (i < urlsToScan.length - 1) await delay(500);
       }
       
       setTimeout(() => {
@@ -6578,7 +6587,7 @@
     }
 
     // Helper: delay
-    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+    // delay() is defined globally near the proxy utilities section
 
     // Helper: fetch with retries
     async function fetchWithRetry(url, maxRetries = 2) {
