@@ -1931,6 +1931,175 @@
     .how-to-use-body .tip .material-symbols-outlined {
       font-size: 16px;
     }
+
+    /* ===== Schema Markup Generator Tab ===== */
+    .schema-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .schema-card:hover {
+      border-color: rgba(255,255,255,0.12);
+    }
+    .schema-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      gap: 0.75rem;
+    }
+    .schema-card-header:hover {
+      background: rgba(255,255,255,0.02);
+    }
+    .schema-card-title {
+      flex: 1;
+      min-width: 0;
+    }
+    .schema-card-title .page-url {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+    .schema-card-title .page-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      margin-top: 0.15rem;
+    }
+    .schema-type-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .schema-type-badge.type-org { background: rgba(139,92,246,0.15); color: #a78bfa; }
+    .schema-type-badge.type-article { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .schema-type-badge.type-service { background: rgba(16,185,129,0.15); color: #34d399; }
+    .schema-type-badge.type-product { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .schema-type-badge.type-faq { background: rgba(236,72,153,0.15); color: #f472b6; }
+    .schema-type-badge.type-page { background: rgba(107,114,128,0.15); color: #9ca3af; }
+    .schema-type-badge.type-existing { background: rgba(239,68,68,0.12); color: #f87171; }
+    .schema-card-body {
+      display: none;
+      border-top: 1px solid var(--border-color);
+    }
+    .schema-card.open .schema-card-body {
+      display: block;
+    }
+    .schema-card .schema-card-header .expand-icon {
+      transition: transform 0.2s;
+      font-size: 20px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .schema-card.open .schema-card-header .expand-icon {
+      transform: rotate(180deg);
+    }
+    .schema-code-block {
+      position: relative;
+      background: #0d1117;
+      padding: 1rem;
+      overflow-x: auto;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .schema-code-block pre {
+      margin: 0;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.78rem;
+      line-height: 1.6;
+      color: #c9d1d9;
+      white-space: pre;
+    }
+    .schema-code-block .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text-secondary);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: var(--transition);
+    }
+    .schema-code-block .copy-btn:hover {
+      background: rgba(255,255,255,0.15);
+      color: var(--text-primary);
+    }
+    .schema-existing-notice {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      background: rgba(245,158,11,0.08);
+      color: var(--warning);
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+    .schema-existing-notice .material-symbols-outlined { font-size: 16px; }
+    .schema-biz-section {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+    .schema-biz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.02);
+    }
+    .schema-biz-header:hover { background: rgba(255,255,255,0.04); }
+    .schema-biz-header .material-symbols-outlined {
+      font-size: 18px;
+      transition: transform 0.2s;
+    }
+    .schema-biz-section.open .schema-biz-header .material-symbols-outlined:last-child {
+      transform: rotate(180deg);
+    }
+    .schema-biz-body {
+      display: none;
+      padding: 0.75rem;
+      border-top: 1px solid var(--border-color);
+    }
+    .schema-biz-section.open .schema-biz-body {
+      display: block;
+    }
+    .schema-biz-body .control-group {
+      margin-bottom: 0.5rem;
+    }
+    .schema-biz-body .control-group:last-child {
+      margin-bottom: 0;
+    }
+    .schema-biz-body .biz-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -1976,6 +2145,10 @@
         <button class="tab-btn" onclick="switchTab('scraper-tab')">
           <span class="material-symbols-outlined">content_paste</span>
           Content Scraper
+        </button>
+        <button class="tab-btn" onclick="switchTab('schema-tab')">
+          <span class="material-symbols-outlined">code</span>
+          Schema Markup
         </button>
       </nav>
     </header>
@@ -2796,6 +2969,151 @@
       </div>
     </main>
 
+    <!-- TAB 6: SCHEMA MARKUP GENERATOR -->
+    <main id="schema-tab" class="tab-content">
+      <div class="how-to-use" onclick="this.classList.toggle('open')">
+        <div class="how-to-use-header">
+          <span class="material-symbols-outlined">help_outline</span>
+          <h4>How to Use - Schema Markup Generator</h4>
+          <span class="material-symbols-outlined how-to-use-chevron">expand_more</span>
+        </div>
+        <div class="how-to-use-body">
+          <ol>
+            <li><strong>Enter a site URL</strong> - Paste your website's homepage URL or sitemap.xml URL</li>
+            <li><strong>Add business info (optional)</strong> - Expand the Business Details section to add your business name, phone, address, and type for richer Organization/LocalBusiness schema</li>
+            <li><strong>Generate</strong> - Click "Generate Schema" to discover all pages from the sitemap and auto-generate JSON-LD structured data for each one</li>
+            <li><strong>Review &amp; Export</strong> - Expand each page card to view the generated schema, copy individual blocks, or export all at once</li>
+          </ol>
+          <div class="tip">
+            <span class="material-symbols-outlined">lightbulb</span>
+            Pages are auto-classified (homepage, blog post, service page, FAQ, etc.) and get the appropriate schema type.
+          </div>
+        </div>
+      </div>
+
+      <div class="two-panel-layout">
+        <!-- LEFT PANEL: Input -->
+        <div class="controls-panel">
+          <div class="panel-header">
+            <span class="material-symbols-outlined">code</span>
+            Schema Settings
+          </div>
+
+          <!-- Site URL -->
+          <div class="control-group">
+            <div class="control-label"><span>Site URL</span></div>
+            <input type="url" class="text-input" id="schema-site-url" placeholder="https://example.com">
+            <p style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.25rem;">Enter homepage URL (auto-discovers sitemap) or paste a direct sitemap.xml URL</p>
+          </div>
+
+          <!-- Business Info (collapsible) -->
+          <div class="schema-biz-section" id="schema-biz-section">
+            <div class="schema-biz-header" onclick="this.parentElement.classList.toggle('open')">
+              <span style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="material-symbols-outlined">business</span>
+                Business Details (optional)
+              </span>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+            <div class="schema-biz-body">
+              <div class="control-group">
+                <div class="control-label"><span>Business Name</span></div>
+                <input type="text" class="text-input" id="schema-biz-name" placeholder="Acme Construction">
+              </div>
+              <div class="control-group">
+                <div class="control-label"><span>Business Type</span></div>
+                <select id="schema-biz-type" style="width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); padding: 0.5rem; font-size: 0.85rem;">
+                  <option value="">Select type...</option>
+                  <option value="LocalBusiness">Local Business (generic)</option>
+                  <option value="HomeBuilder">Home Builder</option>
+                  <option value="RealEstateAgent">Real Estate Agent</option>
+                  <option value="GeneralContractor">General Contractor</option>
+                  <option value="ProfessionalService">Professional Service</option>
+                  <option value="Restaurant">Restaurant</option>
+                  <option value="Store">Store / Retail</option>
+                  <option value="MedicalBusiness">Medical Business</option>
+                  <option value="FinancialService">Financial Service</option>
+                  <option value="LegalService">Legal Service</option>
+                  <option value="AutomotiveBusiness">Automotive Business</option>
+                  <option value="Organization">Organization (non-local)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <div class="control-label"><span>Phone</span></div>
+                <input type="tel" class="text-input" id="schema-biz-phone" placeholder="(555) 123-4567">
+              </div>
+              <div class="control-group">
+                <div class="control-label"><span>Street Address</span></div>
+                <input type="text" class="text-input" id="schema-biz-street" placeholder="123 Main Street">
+              </div>
+              <div class="biz-row">
+                <div class="control-group">
+                  <div class="control-label"><span>City</span></div>
+                  <input type="text" class="text-input" id="schema-biz-city" placeholder="Portland">
+                </div>
+                <div class="control-group">
+                  <div class="control-label"><span>State</span></div>
+                  <input type="text" class="text-input" id="schema-biz-state" placeholder="OR">
+                </div>
+              </div>
+              <div class="biz-row">
+                <div class="control-group">
+                  <div class="control-label"><span>ZIP Code</span></div>
+                  <input type="text" class="text-input" id="schema-biz-zip" placeholder="97201">
+                </div>
+                <div class="control-group">
+                  <div class="control-label"><span>Logo URL</span></div>
+                  <input type="url" class="text-input" id="schema-biz-logo" placeholder="https://example.com/logo.png">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Generate Button -->
+          <button class="btn btn-primary" id="btn-schema-generate" onclick="runSchemaGenerator()" style="width: 100%; justify-content: center;">
+            <span class="material-symbols-outlined">code</span>
+            Generate Schema
+          </button>
+
+          <!-- Progress -->
+          <div id="schema-progress-container" class="progress-container" style="display: none; margin-top: 0.75rem;">
+            <div class="progress-bar" id="schema-progress-bar" style="width: 0%;"></div>
+          </div>
+
+          <!-- Stats -->
+          <div style="margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-secondary);" id="schema-stats-text"></div>
+
+          <!-- Export Buttons -->
+          <div id="schema-export-buttons" style="display: none; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap;">
+            <button class="btn" onclick="copyAllSchemas()" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 0.5rem;">
+              <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+              Copy All
+            </button>
+            <button class="btn" onclick="exportSchemaJSON()" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 0.5rem;">
+              <span class="material-symbols-outlined" style="font-size: 16px;">download</span>
+              Export JSON
+            </button>
+            <button class="btn btn-danger" onclick="clearSchemaResults()" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 0.5rem;">
+              <span class="material-symbols-outlined" style="font-size: 16px;">delete_sweep</span>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT PANEL: Results -->
+        <div class="results-panel">
+          <div id="schema-results-container">
+            <div class="empty-state">
+              <span class="material-symbols-outlined">code</span>
+              <h3>No schema generated yet</h3>
+              <p>Enter a site URL and click "Generate Schema" to auto-generate JSON-LD structured data for every page.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
     <!-- FOOTER -->
     <footer>
       <p>Web Toolkit runs 100% locally in your web browser. Your files are processed entirely on your machine and are never uploaded to any server.</p>
@@ -2961,6 +3279,7 @@
       else if (tabId === 'grabber-tab') index = 2;
       else if (tabId === 'seo-tab') index = 3;
       else if (tabId === 'scraper-tab') index = 4;
+      else if (tabId === 'schema-tab') index = 5;
       document.querySelectorAll('.tab-btn')[index].classList.add('active');
     }
 
@@ -6693,6 +7012,645 @@
       document.getElementById('scraper-export-buttons').style.display = 'none';
       document.getElementById('scraper-progress-container').style.display = 'none';
       document.getElementById('scraper-progress-bar').style.width = '0%';
+    }
+
+    // ==========================================
+    // SCHEMA MARKUP GENERATOR (TAB 6)
+    // ==========================================
+
+    let schemaResults = [];
+
+    // Collect business info from form
+    function getBusinessInfo() {
+      const name = document.getElementById('schema-biz-name').value.trim();
+      const type = document.getElementById('schema-biz-type').value;
+      const phone = document.getElementById('schema-biz-phone').value.trim();
+      const street = document.getElementById('schema-biz-street').value.trim();
+      const city = document.getElementById('schema-biz-city').value.trim();
+      const state = document.getElementById('schema-biz-state').value.trim();
+      const zip = document.getElementById('schema-biz-zip').value.trim();
+      const logo = document.getElementById('schema-biz-logo').value.trim();
+      const hasAddress = street || city || state || zip;
+      if (!name && !type && !phone && !hasAddress) return null;
+      return { name, type: type || 'LocalBusiness', phone, street, city, state, zip, logo, hasAddress };
+    }
+
+    // Classify a page by its URL path and meta content
+    function classifyPage(url, meta) {
+      const path = new URL(url).pathname.toLowerCase().replace(/\/$/, '');
+      const segments = path.split('/').filter(Boolean);
+      const slug = segments[segments.length - 1] || '';
+
+      // Homepage
+      if (path === '' || path === '/' || slug === 'index' || slug === 'home') return 'homepage';
+
+      // FAQ
+      if (slug === 'faq' || slug === 'faqs' || path.includes('/faq')) return 'faq';
+
+      // Contact
+      if (slug === 'contact' || slug === 'contact-us' || path.includes('/contact')) return 'contact';
+
+      // About
+      if (slug === 'about' || slug === 'about-us' || path.includes('/about')) return 'about';
+
+      // Blog post (nested under /blog/ or /news/ or /articles/)
+      if ((path.includes('/blog/') || path.includes('/news/') || path.includes('/articles/') || path.includes('/post/')) && segments.length >= 2) return 'blog_post';
+
+      // Blog listing
+      if (slug === 'blog' || slug === 'news' || slug === 'articles' || slug === 'posts') return 'blog_listing';
+
+      // Service pages
+      if (path.includes('/service') || path.includes('/what-we-do')) {
+        return segments.length >= 2 ? 'service' : 'service_listing';
+      }
+
+      // Product/plan pages
+      if (path.includes('/product') || path.includes('/plan') || path.includes('/model')) {
+        return segments.length >= 2 ? 'product' : 'product_listing';
+      }
+
+      // Portfolio/gallery
+      if (slug === 'portfolio' || slug === 'gallery' || slug === 'projects' || slug === 'work') return 'portfolio';
+
+      // Team
+      if (slug === 'team' || slug === 'staff' || slug === 'our-team') return 'team';
+
+      // Testimonials/Reviews
+      if (slug === 'testimonials' || slug === 'reviews') return 'testimonials';
+
+      // Careers
+      if (slug === 'careers' || slug === 'jobs') return 'careers';
+
+      // Privacy/Terms
+      if (slug === 'privacy' || slug === 'privacy-policy' || slug === 'terms' || slug === 'terms-of-service') return 'legal';
+
+      return 'generic';
+    }
+
+    // Get human-readable label and CSS class for page type
+    function getPageTypeInfo(pageType) {
+      const map = {
+        homepage:        { label: 'Homepage',       badgeClass: 'type-org' },
+        about:           { label: 'About',          badgeClass: 'type-page' },
+        contact:         { label: 'Contact',        badgeClass: 'type-org' },
+        faq:             { label: 'FAQ',             badgeClass: 'type-faq' },
+        blog_listing:    { label: 'Blog',           badgeClass: 'type-article' },
+        blog_post:       { label: 'Blog Post',      badgeClass: 'type-article' },
+        service_listing: { label: 'Services',       badgeClass: 'type-service' },
+        service:         { label: 'Service',        badgeClass: 'type-service' },
+        product_listing: { label: 'Products',       badgeClass: 'type-product' },
+        product:         { label: 'Product',        badgeClass: 'type-product' },
+        portfolio:       { label: 'Portfolio',      badgeClass: 'type-page' },
+        team:            { label: 'Team',           badgeClass: 'type-page' },
+        testimonials:    { label: 'Testimonials',   badgeClass: 'type-page' },
+        careers:         { label: 'Careers',        badgeClass: 'type-page' },
+        legal:           { label: 'Legal',          badgeClass: 'type-page' },
+        generic:         { label: 'Page',           badgeClass: 'type-page' },
+      };
+      return map[pageType] || map.generic;
+    }
+
+    // Build Organization or LocalBusiness schema
+    function buildOrgSchema(siteUrl, bizInfo) {
+      const isLocal = bizInfo.type !== 'Organization';
+      const schema = {
+        '@type': isLocal ? bizInfo.type : 'Organization',
+        name: bizInfo.name || new URL(siteUrl).hostname,
+        url: siteUrl,
+      };
+      if (bizInfo.logo) schema.logo = bizInfo.logo;
+      if (bizInfo.phone) schema.telephone = bizInfo.phone;
+      if (bizInfo.hasAddress) {
+        schema.address = {
+          '@type': 'PostalAddress',
+        };
+        if (bizInfo.street) schema.address.streetAddress = bizInfo.street;
+        if (bizInfo.city) schema.address.addressLocality = bizInfo.city;
+        if (bizInfo.state) schema.address.addressRegion = bizInfo.state;
+        if (bizInfo.zip) schema.address.postalCode = bizInfo.zip;
+        schema.address.addressCountry = 'US';
+      }
+      if (bizInfo.phone) {
+        schema.contactPoint = {
+          '@type': 'ContactPoint',
+          telephone: bizInfo.phone,
+          contactType: 'customer service',
+        };
+      }
+      return schema;
+    }
+
+    // Extract FAQ Q&A pairs from HTML doc
+    function extractFaqPairs(doc) {
+      const pairs = [];
+      // Strategy 1: Look for elements with FAQ-like patterns
+      // dt/dd pairs
+      const dts = doc.querySelectorAll('dt');
+      dts.forEach(dt => {
+        const dd = dt.nextElementSibling;
+        if (dd && dd.tagName === 'DD') {
+          const q = dt.textContent.trim();
+          const a = dd.textContent.trim();
+          if (q && a) pairs.push({ q, a });
+        }
+      });
+      if (pairs.length > 0) return pairs;
+
+      // Strategy 2: h2/h3/h4 followed by p (common FAQ layout)
+      const headings = doc.querySelectorAll('h2, h3, h4');
+      headings.forEach(h => {
+        const text = h.textContent.trim();
+        if (text.includes('?') || text.toLowerCase().startsWith('how') || text.toLowerCase().startsWith('what') || text.toLowerCase().startsWith('why') || text.toLowerCase().startsWith('when') || text.toLowerCase().startsWith('can') || text.toLowerCase().startsWith('do') || text.toLowerCase().startsWith('is')) {
+          let answer = '';
+          let sibling = h.nextElementSibling;
+          while (sibling && !['H1','H2','H3','H4','H5','H6'].includes(sibling.tagName)) {
+            if (sibling.textContent.trim()) answer += sibling.textContent.trim() + ' ';
+            sibling = sibling.nextElementSibling;
+          }
+          answer = answer.trim();
+          if (text && answer) pairs.push({ q: text, a: answer });
+        }
+      });
+      return pairs;
+    }
+
+    // Generate JSON-LD schema for a page
+    function generateSchemaForPage(url, meta, pageType, bizInfo, siteUrl) {
+      const schemas = [];
+      const origin = new URL(siteUrl).origin;
+
+      // Breadcrumb for all pages
+      const pathParts = new URL(url).pathname.split('/').filter(Boolean);
+      if (pathParts.length > 0) {
+        const breadcrumb = {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: origin + '/' },
+          ],
+        };
+        let builtPath = '';
+        pathParts.forEach((seg, i) => {
+          builtPath += '/' + seg;
+          breadcrumb.itemListElement.push({
+            '@type': 'ListItem',
+            position: i + 2,
+            name: seg.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+            item: origin + builtPath,
+          });
+        });
+        schemas.push(breadcrumb);
+      }
+
+      switch (pageType) {
+        case 'homepage': {
+          // WebSite with SearchAction
+          const website = {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: meta.title || (bizInfo ? bizInfo.name : new URL(siteUrl).hostname),
+            url: origin + '/',
+          };
+          schemas.push(website);
+
+          // Organization/LocalBusiness
+          if (bizInfo) {
+            const org = { '@context': 'https://schema.org', ...buildOrgSchema(siteUrl, bizInfo) };
+            schemas.push(org);
+          }
+          break;
+        }
+        case 'about': {
+          schemas.push({
+            '@context': 'https://schema.org',
+            '@type': 'AboutPage',
+            name: meta.title || 'About',
+            description: meta.description || '',
+            url: url,
+            isPartOf: { '@type': 'WebSite', url: origin + '/' },
+          });
+          break;
+        }
+        case 'contact': {
+          const contactPage = {
+            '@context': 'https://schema.org',
+            '@type': 'ContactPage',
+            name: meta.title || 'Contact',
+            description: meta.description || '',
+            url: url,
+          };
+          if (bizInfo) {
+            contactPage.mainEntity = buildOrgSchema(siteUrl, bizInfo);
+          }
+          schemas.push(contactPage);
+          break;
+        }
+        case 'faq': {
+          const faqSchema = {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            name: meta.title || 'FAQ',
+            url: url,
+            mainEntity: [],
+          };
+          if (meta.faqPairs && meta.faqPairs.length > 0) {
+            faqSchema.mainEntity = meta.faqPairs.map(p => ({
+              '@type': 'Question',
+              name: p.q,
+              acceptedAnswer: { '@type': 'Answer', text: p.a },
+            }));
+          }
+          schemas.push(faqSchema);
+          break;
+        }
+        case 'blog_listing': {
+          schemas.push({
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: meta.title || 'Blog',
+            description: meta.description || '',
+            url: url,
+            isPartOf: { '@type': 'WebSite', url: origin + '/' },
+          });
+          break;
+        }
+        case 'blog_post': {
+          const article = {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: meta.title || '',
+            description: meta.description || '',
+            url: url,
+            mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+          };
+          if (meta.ogImage) article.image = meta.ogImage;
+          if (meta.publishedDate) article.datePublished = meta.publishedDate;
+          if (meta.modifiedDate) article.dateModified = meta.modifiedDate;
+          if (bizInfo) {
+            article.author = { '@type': 'Organization', name: bizInfo.name };
+            article.publisher = {
+              '@type': 'Organization',
+              name: bizInfo.name,
+              ...(bizInfo.logo ? { logo: { '@type': 'ImageObject', url: bizInfo.logo } } : {}),
+            };
+          }
+          schemas.push(article);
+          break;
+        }
+        case 'service_listing': {
+          schemas.push({
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: meta.title || 'Services',
+            description: meta.description || '',
+            url: url,
+          });
+          break;
+        }
+        case 'service': {
+          const service = {
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            name: meta.title || '',
+            description: meta.description || '',
+            url: url,
+          };
+          if (bizInfo) {
+            service.provider = {
+              '@type': bizInfo.type || 'Organization',
+              name: bizInfo.name,
+              url: origin + '/',
+            };
+          }
+          if (meta.ogImage) service.image = meta.ogImage;
+          schemas.push(service);
+          break;
+        }
+        case 'product_listing': {
+          schemas.push({
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: meta.title || 'Products',
+            description: meta.description || '',
+            url: url,
+          });
+          break;
+        }
+        case 'product': {
+          const product = {
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: meta.h1 || meta.title || '',
+            description: meta.description || '',
+            url: url,
+          };
+          if (meta.ogImage) product.image = meta.ogImage;
+          if (bizInfo) {
+            product.brand = { '@type': 'Organization', name: bizInfo.name };
+          }
+          schemas.push(product);
+          break;
+        }
+        case 'testimonials': {
+          schemas.push({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: meta.title || 'Testimonials',
+            description: meta.description || '',
+            url: url,
+          });
+          break;
+        }
+        default: {
+          // Generic WebPage
+          schemas.push({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: meta.title || '',
+            description: meta.description || '',
+            url: url,
+          });
+        }
+      }
+
+      return schemas;
+    }
+
+    // Extract meta info from a fetched HTML document
+    function extractSchemaMeta(htmlText, url) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, 'text/html');
+      // Strip non-content
+      doc.querySelectorAll('script:not([type="application/ld+json"]), style, nav, footer, header').forEach(el => el.remove());
+
+      const title = doc.querySelector('title')?.textContent?.trim() || '';
+      const description = doc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() || '';
+      const h1 = doc.querySelector('h1')?.textContent?.trim() || '';
+      const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content')?.trim() || '';
+      const ogDesc = doc.querySelector('meta[property="og:description"]')?.getAttribute('content')?.trim() || '';
+      const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content')?.trim() || '';
+      const publishedDate = doc.querySelector('meta[property="article:published_time"]')?.getAttribute('content')?.trim() || '';
+      const modifiedDate = doc.querySelector('meta[property="article:modified_time"]')?.getAttribute('content')?.trim() || '';
+
+      // Check for existing JSON-LD
+      const existingSchemas = [];
+      doc.querySelectorAll('script[type="application/ld+json"]').forEach(s => {
+        try { existingSchemas.push(JSON.parse(s.textContent)); } catch(e) {}
+      });
+      // Re-parse to get full doc for FAQ extraction (we stripped script above except ld+json)
+      const fullDoc = new DOMParser().parseFromString(htmlText, 'text/html');
+      fullDoc.querySelectorAll('script, style, nav, footer, header').forEach(el => el.remove());
+      const faqPairs = extractFaqPairs(fullDoc);
+
+      return { title, description, h1, ogTitle, ogDesc, ogImage, publishedDate, modifiedDate, existingSchemas, faqPairs };
+    }
+
+    // Main schema generator entry point
+    async function runSchemaGenerator() {
+      const siteUrlInput = document.getElementById('schema-site-url').value.trim();
+      if (!siteUrlInput) return alert('Please enter a site URL.');
+
+      const btn = document.getElementById('btn-schema-generate');
+      const container = document.getElementById('schema-results-container');
+      const progressContainer = document.getElementById('schema-progress-container');
+      const progressBar = document.getElementById('schema-progress-bar');
+      const statsText = document.getElementById('schema-stats-text');
+      const exportBtns = document.getElementById('schema-export-buttons');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Discovering pages...';
+      container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined" style="animation: spin 1s linear infinite; color: var(--accent-primary);">sync</span><h3>Discovering pages...</h3><p>Fetching sitemap to find all pages on the site.</p></div>';
+      exportBtns.style.display = 'none';
+      progressContainer.style.display = 'none';
+      statsText.textContent = '';
+
+      // Normalize site URL
+      let siteUrl = siteUrlInput;
+      if (!siteUrl.startsWith('http')) siteUrl = 'https://' + siteUrl;
+
+      const bizInfo = getBusinessInfo();
+      let urlsToScan = [];
+
+      try {
+        // Determine if user provided a sitemap URL or a homepage
+        const isSitemap = siteUrl.includes('sitemap') && siteUrl.includes('.xml');
+        let sitemapUrl = isSitemap ? siteUrl : new URL(siteUrl).origin + '/sitemap.xml';
+
+        // Fetch sitemap
+        const { response } = await fetchWithProxyFallback(sitemapUrl);
+        const xmlText = await response.text();
+        const entries = parseSitemapUrls(xmlText);
+
+        const nestedSitemaps = entries.filter(e => e.type === 'sitemap');
+        const directPages = entries.filter(e => e.type === 'page');
+
+        if (nestedSitemaps.length > 0) {
+          btn.innerHTML = `<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Parsing ${nestedSitemaps.length} sub-sitemaps...`;
+          for (const nested of nestedSitemaps) {
+            try {
+              const { response: nr } = await fetchWithProxyFallback(nested.url);
+              const nx = await nr.text();
+              parseSitemapUrls(nx).filter(e => e.type === 'page').forEach(e => directPages.push(e));
+            } catch (e) {
+              console.warn('Failed sub-sitemap:', nested.url);
+            }
+          }
+        }
+
+        urlsToScan = directPages.map(e => e.url);
+
+        if (urlsToScan.length === 0) {
+          container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined" style="color: var(--warning);">warning</span><h3>No pages found</h3><p>Could not find pages in the sitemap. Check the URL and try again.</p></div>';
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined">code</span> Generate Schema';
+          return;
+        }
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state"><span class="material-symbols-outlined" style="color: var(--danger);">error</span><h3>Failed to fetch sitemap</h3><p>Could not retrieve the sitemap at the expected URL. Try pasting a direct sitemap.xml URL instead.</p></div>`;
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined">code</span> Generate Schema';
+        return;
+      }
+
+      // Scan each page
+      btn.innerHTML = `<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Scanning 0/${urlsToScan.length}...`;
+      progressContainer.style.display = 'block';
+      progressBar.style.width = '0%';
+      schemaResults = [];
+      let successCount = 0;
+      let failCount = 0;
+      const siteOrigin = new URL(siteUrl.includes('sitemap') ? urlsToScan[0] : siteUrl).origin;
+
+      for (let i = 0; i < urlsToScan.length; i++) {
+        const pageUrl = urlsToScan[i];
+        btn.innerHTML = `<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> ${i + 1}/${urlsToScan.length}...`;
+        const pct = ((i + 1) / urlsToScan.length * 100).toFixed(0);
+        progressBar.style.width = pct + '%';
+
+        try {
+          const { response } = await fetchWithRetry(pageUrl, 1);
+          const htmlText = await response.text();
+          const meta = extractSchemaMeta(htmlText, pageUrl);
+          const pageType = classifyPage(pageUrl, meta);
+          const schemas = generateSchemaForPage(pageUrl, meta, pageType, bizInfo, siteOrigin);
+
+          schemaResults.push({
+            url: pageUrl,
+            title: meta.title || meta.h1 || pageUrl,
+            pageType,
+            schemas,
+            existingSchemas: meta.existingSchemas,
+            faqCount: meta.faqPairs ? meta.faqPairs.length : 0,
+          });
+          successCount++;
+        } catch (err) {
+          schemaResults.push({
+            url: pageUrl,
+            title: pageUrl,
+            pageType: 'generic',
+            schemas: [],
+            existingSchemas: [],
+            error: err.message,
+          });
+          failCount++;
+        }
+
+        // Small delay between requests
+        if (i < urlsToScan.length - 1) await delay(500);
+      }
+
+      // Done
+      progressContainer.style.display = 'none';
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined">code</span> Generate Schema';
+      statsText.textContent = `${successCount} pages scanned, ${failCount} errors, ${schemaResults.filter(r => r.existingSchemas.length > 0).length} with existing schema`;
+      exportBtns.style.display = 'flex';
+
+      renderSchemaResults();
+    }
+
+    // Render schema result cards
+    function renderSchemaResults() {
+      const container = document.getElementById('schema-results-container');
+      if (schemaResults.length === 0) {
+        container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">code</span><h3>No schema generated yet</h3></div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      schemaResults.forEach((result, idx) => {
+        const typeInfo = getPageTypeInfo(result.pageType);
+        const hasExisting = result.existingSchemas && result.existingSchemas.length > 0;
+        const card = document.createElement('div');
+        card.className = 'schema-card';
+        card.id = `schema-card-${idx}`;
+
+        let bodyContent = '';
+        if (result.error) {
+          bodyContent = `<div style="padding: 1rem; color: var(--danger); font-size: 0.85rem;"><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">error</span> Failed to scan: ${result.error}</div>`;
+        } else {
+          if (hasExisting) {
+            bodyContent += `<div class="schema-existing-notice"><span class="material-symbols-outlined">info</span> This page already has ${result.existingSchemas.length} existing schema block(s). Review below to avoid duplicates.</div>`;
+          }
+          result.schemas.forEach((schema, sIdx) => {
+            const json = JSON.stringify(schema, null, 2);
+            bodyContent += `
+              <div class="schema-code-block">
+                <button class="copy-btn" onclick="event.stopPropagation(); copySchemaBlock(${idx}, ${sIdx})">
+                  <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+                  Copy
+                </button>
+                <pre>${escapeHtml(json)}</pre>
+              </div>
+            `;
+          });
+        }
+
+        card.innerHTML = `
+          <div class="schema-card-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="schema-type-badge ${typeInfo.badgeClass}">${typeInfo.label}</span>
+            <div class="schema-card-title">
+              <span class="page-title">${escapeHtml(result.title)}</span>
+              <span class="page-url">${escapeHtml(result.url)}</span>
+            </div>
+            ${hasExisting ? '<span class="schema-type-badge type-existing">Has Schema</span>' : ''}
+            <span class="material-symbols-outlined expand-icon">expand_more</span>
+          </div>
+          <div class="schema-card-body">${bodyContent}</div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // HTML escape helper
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Copy a single schema block
+    function copySchemaBlock(resultIdx, schemaIdx) {
+      const schema = schemaResults[resultIdx].schemas[schemaIdx];
+      const scriptTag = '<script type="application/ld+json">\n' + JSON.stringify(schema, null, 2) + '\n</' + 'script>';
+      navigator.clipboard.writeText(scriptTag).then(() => {
+        // Visual feedback
+        const card = document.getElementById(`schema-card-${resultIdx}`);
+        const btns = card.querySelectorAll('.copy-btn');
+        if (btns[schemaIdx]) {
+          const origText = btns[schemaIdx].innerHTML;
+          btns[schemaIdx].innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; color: var(--success);">check</span> Copied!';
+          setTimeout(() => { btns[schemaIdx].innerHTML = origText; }, 1500);
+        }
+      });
+    }
+
+    // Copy all schemas
+    function copyAllSchemas() {
+      const allBlocks = schemaResults
+        .filter(r => r.schemas && r.schemas.length > 0)
+        .map(r => {
+          return r.schemas.map(s => '<script type="application/ld+json">\n' + JSON.stringify(s, null, 2) + '\n</' + 'script>').join('\n\n');
+        })
+        .join('\n\n<!-- ' + '-'.repeat(50) + ' -->\n\n');
+
+      navigator.clipboard.writeText(allBlocks).then(() => {
+        const btn = document.querySelector('#schema-export-buttons button:first-child');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px; color: var(--success);">check</span> Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 1500);
+      });
+    }
+
+    // Export as JSON file
+    function exportSchemaJSON() {
+      const exportData = {};
+      schemaResults.forEach(r => {
+        if (r.schemas && r.schemas.length > 0) {
+          exportData[r.url] = {
+            pageType: r.pageType,
+            title: r.title,
+            hasExistingSchema: r.existingSchemas && r.existingSchemas.length > 0,
+            schemas: r.schemas,
+          };
+        }
+      });
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'schema-markup.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // Clear schema results
+    function clearSchemaResults() {
+      schemaResults = [];
+      document.getElementById('schema-results-container').innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">code</span><h3>No schema generated yet</h3><p>Enter a site URL and click "Generate Schema" to auto-generate JSON-LD structured data for every page.</p></div>';
+      document.getElementById('schema-export-buttons').style.display = 'none';
+      document.getElementById('schema-stats-text').textContent = '';
+      document.getElementById('schema-progress-container').style.display = 'none';
     }
 
   </script>
