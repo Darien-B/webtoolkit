@@ -7452,62 +7452,61 @@
         card.className = 'schema-card';
         card.id = `schema-card-${idx}`;
 
+        // Combine all generated schemas into one block per page
+        const combinedGenerated = result.schemas.map(s =>
+          '<script type="application/ld+json">\n' + JSON.stringify(s, null, 2) + '\n</' + 'script>'
+        ).join('\n\n');
+
         let bodyContent = '';
         if (result.error) {
           bodyContent = `<div style="padding: 1rem; color: var(--danger); font-size: 0.85rem;"><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">error</span> Failed to scan: ${result.error}</div>`;
         } else if (hasExisting) {
-          // Build toggle tabs: Generated | Existing
+          // Toggle tabs: Generated | Existing
           bodyContent += `<div class="schema-toggle-tabs">`;
           bodyContent += `<button class="schema-toggle-tab active" onclick="event.stopPropagation(); switchSchemaPane(${idx}, 'generated')"><span class="material-symbols-outlined">auto_fix_high</span> Generated</button>`;
           bodyContent += `<button class="schema-toggle-tab" onclick="event.stopPropagation(); switchSchemaPane(${idx}, 'existing')"><span class="material-symbols-outlined">history</span> Existing (${result.existingSchemas.length})</button>`;
           bodyContent += `</div>`;
 
-          // Generated pane
+          // Generated pane - single combined block
           bodyContent += `<div class="schema-tab-pane active" data-pane="generated" data-card="${idx}">`;
-          result.schemas.forEach((schema, sIdx) => {
-            const json = JSON.stringify(schema, null, 2);
-            bodyContent += `
-              <div class="schema-code-block">
-                <button class="copy-btn" onclick="event.stopPropagation(); copySchemaBlock(${idx}, ${sIdx})">
-                  <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
-                  Copy
-                </button>
-                <pre>${escapeHtml(json)}</pre>
-              </div>
-            `;
-          });
+          bodyContent += `
+            <div class="schema-code-block">
+              <button class="copy-btn" onclick="event.stopPropagation(); copyPageSchema(${idx})">
+                <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+                Copy
+              </button>
+              <pre>${escapeHtml(combinedGenerated)}</pre>
+            </div>
+          `;
           bodyContent += `</div>`;
 
           // Existing pane
           bodyContent += `<div class="schema-tab-pane" data-pane="existing" data-card="${idx}">`;
-          bodyContent += `<div class="schema-existing-notice"><span class="material-symbols-outlined">info</span> Schema found on the existing site. Copy these over if the new site does not auto-generate them.</div>`;
-          result.existingSchemas.forEach((schema, eIdx) => {
-            const json = JSON.stringify(schema, null, 2);
-            bodyContent += `
-              <div class="schema-code-block">
-                <button class="copy-btn" onclick="event.stopPropagation(); copyExistingSchema(${idx}, ${eIdx})">
-                  <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
-                  Copy
-                </button>
-                <pre>${escapeHtml(json)}</pre>
-              </div>
-            `;
-          });
+          bodyContent += `<div class="schema-existing-notice"><span class="material-symbols-outlined">info</span> Schema from the existing site. Copy these over if the new site does not auto-generate them.</div>`;
+          const combinedExisting = result.existingSchemas.map(s =>
+            '<script type="application/ld+json">\n' + JSON.stringify(s, null, 2) + '\n</' + 'script>'
+          ).join('\n\n');
+          bodyContent += `
+            <div class="schema-code-block">
+              <button class="copy-btn" onclick="event.stopPropagation(); copyExistingSchema(${idx})">
+                <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+                Copy
+              </button>
+              <pre>${escapeHtml(combinedExisting)}</pre>
+            </div>
+          `;
           bodyContent += `</div>`;
         } else {
-          // No existing schema, just show generated
-          result.schemas.forEach((schema, sIdx) => {
-            const json = JSON.stringify(schema, null, 2);
-            bodyContent += `
-              <div class="schema-code-block">
-                <button class="copy-btn" onclick="event.stopPropagation(); copySchemaBlock(${idx}, ${sIdx})">
-                  <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
-                  Copy
-                </button>
-                <pre>${escapeHtml(json)}</pre>
-              </div>
-            `;
-          });
+          // No existing schema - single combined block
+          bodyContent += `
+            <div class="schema-code-block">
+              <button class="copy-btn" onclick="event.stopPropagation(); copyPageSchema(${idx})">
+                <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+                Copy
+              </button>
+              <pre>${escapeHtml(combinedGenerated)}</pre>
+            </div>
+          `;
         }
 
         card.innerHTML = `
@@ -7540,17 +7539,19 @@
     }
 
     // Copy existing schema block
-    function copyExistingSchema(resultIdx, schemaIdx) {
-      const schema = schemaResults[resultIdx].existingSchemas[schemaIdx];
-      const scriptTag = '<script type="application/ld+json">\n' + JSON.stringify(schema, null, 2) + '\n</' + 'script>';
-      navigator.clipboard.writeText(scriptTag).then(() => {
+    function copyExistingSchema(resultIdx) {
+      const result = schemaResults[resultIdx];
+      const combined = result.existingSchemas.map(s =>
+        '<script type="application/ld+json">\n' + JSON.stringify(s, null, 2) + '\n</' + 'script>'
+      ).join('\n\n');
+      navigator.clipboard.writeText(combined).then(() => {
         const card = document.getElementById(`schema-card-${resultIdx}`);
         const pane = card.querySelector('[data-pane="existing"]');
-        const btns = pane.querySelectorAll('.copy-btn');
-        if (btns[schemaIdx]) {
-          const origText = btns[schemaIdx].innerHTML;
-          btns[schemaIdx].innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; color: var(--success);">check</span> Copied!';
-          setTimeout(() => { btns[schemaIdx].innerHTML = origText; }, 1500);
+        const btn = pane.querySelector('.copy-btn');
+        if (btn) {
+          const origText = btn.innerHTML;
+          btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; color: var(--success);">check</span> Copied!';
+          setTimeout(() => { btn.innerHTML = origText; }, 1500);
         }
       });
     }
@@ -7562,20 +7563,28 @@
       return div.innerHTML;
     }
 
-    // Copy a single schema block
-    function copySchemaBlock(resultIdx, schemaIdx) {
-      const schema = schemaResults[resultIdx].schemas[schemaIdx];
-      const scriptTag = '<script type="application/ld+json">\n' + JSON.stringify(schema, null, 2) + '\n</' + 'script>';
-      navigator.clipboard.writeText(scriptTag).then(() => {
-        // Visual feedback
+    // Copy all generated schemas for a single page
+    function copyPageSchema(resultIdx) {
+      const result = schemaResults[resultIdx];
+      const combined = result.schemas.map(s =>
+        '<script type="application/ld+json">\n' + JSON.stringify(s, null, 2) + '\n</' + 'script>'
+      ).join('\n\n');
+      navigator.clipboard.writeText(combined).then(() => {
         const card = document.getElementById(`schema-card-${resultIdx}`);
-        const btns = card.querySelectorAll('.copy-btn');
-        if (btns[schemaIdx]) {
-          const origText = btns[schemaIdx].innerHTML;
-          btns[schemaIdx].innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; color: var(--success);">check</span> Copied!';
-          setTimeout(() => { btns[schemaIdx].innerHTML = origText; }, 1500);
+        // Find the copy button in the generated pane (or the only code block if no toggle)
+        const genPane = card.querySelector('[data-pane="generated"]');
+        const btn = genPane ? genPane.querySelector('.copy-btn') : card.querySelector('.schema-code-block .copy-btn');
+        if (btn) {
+          const origText = btn.innerHTML;
+          btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; color: var(--success);">check</span> Copied!';
+          setTimeout(() => { btn.innerHTML = origText; }, 1500);
         }
       });
+    }
+
+    // Copy a single schema block (legacy, kept for compatibility)
+    function copySchemaBlock(resultIdx, schemaIdx) {
+      copyPageSchema(resultIdx);
     }
 
     // Copy all schemas
