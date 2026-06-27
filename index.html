@@ -2968,9 +2968,10 @@
         </div>
         <div class="how-to-use-body">
           <ol>
-            <li><strong>Enter a site URL</strong> - Paste your website's homepage URL or sitemap.xml URL</li>
-            <li><strong>Generate</strong> - Click "Generate Schema" to discover all pages from the sitemap and auto-generate JSON-LD structured data for each one</li>
-            <li><strong>Review &amp; Export</strong> - Expand each page card to view the generated schema, copy individual blocks, or export all at once</li>
+            <li><strong>Enter the staging/temp URL</strong> - Paste the site's current URL where it's being built (e.g. client-name.stacq.io)</li>
+            <li><strong>Set the live domain</strong> - Enter the production domain (e.g. https://covalhomes.com) so all schema URLs use the correct live address</li>
+            <li><strong>Generate</strong> - Click "Generate Schema" to discover all pages and auto-generate JSON-LD structured data</li>
+            <li><strong>Review &amp; Copy</strong> - Expand each page, click Copy to get all schema for that page, and paste into the site</li>
           </ol>
           <div class="tip">
             <span class="material-symbols-outlined">lightbulb</span>
@@ -2987,11 +2988,17 @@
             Schema Settings
           </div>
 
-          <!-- Site URL -->
           <div class="control-group">
             <div class="control-label"><span>Site URL</span></div>
-            <input type="url" class="text-input" id="schema-site-url" placeholder="https://example.com">
-            <p style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.25rem;">Enter homepage URL (auto-discovers sitemap) or paste a direct sitemap.xml URL</p>
+            <input type="url" class="text-input" id="schema-site-url" placeholder="https://client-name.stacq.io">
+            <p style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.25rem;">Staging/temp URL where the site is currently hosted</p>
+          </div>
+
+          <!-- Live Domain -->
+          <div class="control-group">
+            <div class="control-label"><span>Live Domain</span></div>
+            <input type="url" class="text-input" id="schema-live-domain" placeholder="https://covalhomes.com">
+            <p style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.25rem;">Production URL to use in generated schema (replaces staging domain)</p>
           </div>
 
           <!-- Generate Button -->
@@ -7432,6 +7439,23 @@
         if (pathB === '/' || pathB === '') return 1;
         return pathA.localeCompare(pathB);
       });
+      // Replace staging URLs with live domain in generated schemas
+      const liveDomainInput = document.getElementById('schema-live-domain').value.trim();
+      if (liveDomainInput) {
+        let liveDomain = liveDomainInput;
+        if (!liveDomain.startsWith('http')) liveDomain = 'https://' + liveDomain;
+        // Remove trailing slash for clean replacement
+        const liveOrigin = new URL(liveDomain).origin;
+
+        schemaResults.forEach(result => {
+          // Replace in the display URL
+          result.url = result.url.replace(siteOrigin, liveOrigin);
+          // Replace in all generated schema objects (deep string replace via JSON roundtrip)
+          result.schemas = JSON.parse(
+            JSON.stringify(result.schemas).replaceAll(siteOrigin, liveOrigin)
+          );
+        });
+      }
 
       renderSchemaResults();
     }
