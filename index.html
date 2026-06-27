@@ -1946,10 +1946,10 @@
     .schema-card-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding: 0.75rem 1rem;
       cursor: pointer;
-      gap: 0.75rem;
+      gap: 0.5rem;
+      min-width: 0;
     }
     .schema-card-header:hover {
       background: rgba(255,255,255,0.02);
@@ -1957,6 +1957,7 @@
     .schema-card-title {
       flex: 1;
       min-width: 0;
+      overflow: hidden;
     }
     .schema-card-title .page-url {
       font-size: 0.78rem;
@@ -2056,6 +2057,38 @@
       font-weight: 500;
     }
     .schema-existing-notice .material-symbols-outlined { font-size: 16px; }
+    .schema-toggle-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .schema-toggle-tab {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+    .schema-toggle-tab:hover {
+      background: rgba(255,255,255,0.03);
+      color: var(--text-primary);
+    }
+    .schema-toggle-tab.active {
+      color: var(--accent-primary);
+      background: rgba(232,121,73,0.06);
+      box-shadow: inset 0 -2px 0 var(--accent-primary);
+    }
+    .schema-toggle-tab .material-symbols-outlined { font-size: 16px; }
+    .schema-tab-pane { display: none; }
+    .schema-tab-pane.active { display: block; }
   </style>
 </head>
 <body>
@@ -2993,7 +3026,7 @@
         </div>
 
         <!-- RIGHT PANEL: Results -->
-        <div class="panel" style="padding: 0;">
+        <div class="panel" style="padding: 0; min-width: 0; overflow: hidden;">
           <div id="schema-results-container">
             <div class="empty-state">
               <span class="material-symbols-outlined">code</span>
@@ -7390,6 +7423,16 @@
       statsText.textContent = `${successCount} pages scanned, ${failCount} errors, ${schemaResults.filter(r => r.existingSchemas.length > 0).length} with existing schema`;
       exportBtns.style.display = 'flex';
 
+      // Sort results: homepage first, then by URL path alphabetically
+      schemaResults.sort((a, b) => {
+        const pathA = new URL(a.url).pathname;
+        const pathB = new URL(b.url).pathname;
+        // Homepage always first
+        if (pathA === '/' || pathA === '') return -1;
+        if (pathB === '/' || pathB === '') return 1;
+        return pathA.localeCompare(pathB);
+      });
+
       renderSchemaResults();
     }
 
@@ -7412,10 +7455,47 @@
         let bodyContent = '';
         if (result.error) {
           bodyContent = `<div style="padding: 1rem; color: var(--danger); font-size: 0.85rem;"><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">error</span> Failed to scan: ${result.error}</div>`;
+        } else if (hasExisting) {
+          // Build toggle tabs: Generated | Existing
+          bodyContent += `<div class="schema-toggle-tabs">`;
+          bodyContent += `<button class="schema-toggle-tab active" onclick="event.stopPropagation(); switchSchemaPane(${idx}, 'generated')"><span class="material-symbols-outlined">auto_fix_high</span> Generated</button>`;
+          bodyContent += `<button class="schema-toggle-tab" onclick="event.stopPropagation(); switchSchemaPane(${idx}, 'existing')"><span class="material-symbols-outlined">history</span> Existing (${result.existingSchemas.length})</button>`;
+          bodyContent += `</div>`;
+
+          // Generated pane
+          bodyContent += `<div class="schema-tab-pane active" data-pane="generated" data-card="${idx}">`;
+          result.schemas.forEach((schema, sIdx) => {
+            const json = JSON.stringify(schema, null, 2);
+            bodyContent += `
+              <div class="schema-code-block">
+                <button class="copy-btn" onclick="event.stopPropagation(); copySchemaBlock(${idx}, ${sIdx})">
+                  <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+                  Copy
+                </button>
+                <pre>${escapeHtml(json)}</pre>
+              </div>
+            `;
+          });
+          bodyContent += `</div>`;
+
+          // Existing pane
+          bodyContent += `<div class="schema-tab-pane" data-pane="existing" data-card="${idx}">`;
+          bodyContent += `<div class="schema-existing-notice"><span class="material-symbols-outlined">info</span> Schema found on the existing site. Copy these over if the new site does not auto-generate them.</div>`;
+          result.existingSchemas.forEach((schema, eIdx) => {
+            const json = JSON.stringify(schema, null, 2);
+            bodyContent += `
+              <div class="schema-code-block">
+                <button class="copy-btn" onclick="event.stopPropagation(); copyExistingSchema(${idx}, ${eIdx})">
+                  <span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+                  Copy
+                </button>
+                <pre>${escapeHtml(json)}</pre>
+              </div>
+            `;
+          });
+          bodyContent += `</div>`;
         } else {
-          if (hasExisting) {
-            bodyContent += `<div class="schema-existing-notice"><span class="material-symbols-outlined">info</span> This page already has ${result.existingSchemas.length} existing schema block(s). Review below to avoid duplicates.</div>`;
-          }
+          // No existing schema, just show generated
           result.schemas.forEach((schema, sIdx) => {
             const json = JSON.stringify(schema, null, 2);
             bodyContent += `
@@ -7444,6 +7524,34 @@
         `;
 
         container.appendChild(card);
+      });
+    }
+
+    // Switch between generated/existing schema panes
+    function switchSchemaPane(cardIdx, paneType) {
+      const card = document.getElementById(`schema-card-${cardIdx}`);
+      // Update tab buttons
+      card.querySelectorAll('.schema-toggle-tab').forEach(tab => tab.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      // Update panes
+      card.querySelectorAll('.schema-tab-pane').forEach(pane => {
+        pane.classList.toggle('active', pane.dataset.pane === paneType);
+      });
+    }
+
+    // Copy existing schema block
+    function copyExistingSchema(resultIdx, schemaIdx) {
+      const schema = schemaResults[resultIdx].existingSchemas[schemaIdx];
+      const scriptTag = '<script type="application/ld+json">\n' + JSON.stringify(schema, null, 2) + '\n</' + 'script>';
+      navigator.clipboard.writeText(scriptTag).then(() => {
+        const card = document.getElementById(`schema-card-${resultIdx}`);
+        const pane = card.querySelector('[data-pane="existing"]');
+        const btns = pane.querySelectorAll('.copy-btn');
+        if (btns[schemaIdx]) {
+          const origText = btns[schemaIdx].innerHTML;
+          btns[schemaIdx].innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; color: var(--success);">check</span> Copied!';
+          setTimeout(() => { btns[schemaIdx].innerHTML = origText; }, 1500);
+        }
       });
     }
 
