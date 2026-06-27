@@ -2056,50 +2056,6 @@
       font-weight: 500;
     }
     .schema-existing-notice .material-symbols-outlined { font-size: 16px; }
-    .schema-biz-section {
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      margin-bottom: 0.75rem;
-    }
-    .schema-biz-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.6rem 0.75rem;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      background: rgba(255,255,255,0.02);
-    }
-    .schema-biz-header:hover { background: rgba(255,255,255,0.04); }
-    .schema-biz-header .material-symbols-outlined {
-      font-size: 18px;
-      transition: transform 0.2s;
-    }
-    .schema-biz-section.open .schema-biz-header .material-symbols-outlined:last-child {
-      transform: rotate(180deg);
-    }
-    .schema-biz-body {
-      display: none;
-      padding: 0.75rem;
-      border-top: 1px solid var(--border-color);
-    }
-    .schema-biz-section.open .schema-biz-body {
-      display: block;
-    }
-    .schema-biz-body .control-group {
-      margin-bottom: 0.5rem;
-    }
-    .schema-biz-body .control-group:last-child {
-      margin-bottom: 0;
-    }
-    .schema-biz-body .biz-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-    }
   </style>
 </head>
 <body>
@@ -2980,13 +2936,12 @@
         <div class="how-to-use-body">
           <ol>
             <li><strong>Enter a site URL</strong> - Paste your website's homepage URL or sitemap.xml URL</li>
-            <li><strong>Add business info (optional)</strong> - Expand the Business Details section to add your business name, phone, address, and type for richer Organization/LocalBusiness schema</li>
             <li><strong>Generate</strong> - Click "Generate Schema" to discover all pages from the sitemap and auto-generate JSON-LD structured data for each one</li>
             <li><strong>Review &amp; Export</strong> - Expand each page card to view the generated schema, copy individual blocks, or export all at once</li>
           </ol>
           <div class="tip">
             <span class="material-symbols-outlined">lightbulb</span>
-            Pages are auto-classified (homepage, blog post, service page, FAQ, etc.) and get the appropriate schema type.
+            Pages are auto-classified (homepage, blog post, service page, FAQ, etc.) and the business name is auto-detected from existing schema.
           </div>
         </div>
       </div>
@@ -3004,69 +2959,6 @@
             <div class="control-label"><span>Site URL</span></div>
             <input type="url" class="text-input" id="schema-site-url" placeholder="https://example.com">
             <p style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.25rem;">Enter homepage URL (auto-discovers sitemap) or paste a direct sitemap.xml URL</p>
-          </div>
-
-          <!-- Business Info (collapsible) -->
-          <div class="schema-biz-section" id="schema-biz-section">
-            <div class="schema-biz-header" onclick="this.parentElement.classList.toggle('open')">
-              <span style="display: flex; align-items: center; gap: 0.4rem;">
-                <span class="material-symbols-outlined">business</span>
-                Business Details (optional)
-              </span>
-              <span class="material-symbols-outlined">expand_more</span>
-            </div>
-            <div class="schema-biz-body">
-              <div class="control-group">
-                <div class="control-label"><span>Business Name</span></div>
-                <input type="text" class="text-input" id="schema-biz-name" placeholder="Acme Construction">
-              </div>
-              <div class="control-group">
-                <div class="control-label"><span>Business Type</span></div>
-                <select id="schema-biz-type" style="width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); padding: 0.5rem; font-size: 0.85rem;">
-                  <option value="">Select type...</option>
-                  <option value="LocalBusiness">Local Business (generic)</option>
-                  <option value="HomeBuilder">Home Builder</option>
-                  <option value="RealEstateAgent">Real Estate Agent</option>
-                  <option value="GeneralContractor">General Contractor</option>
-                  <option value="ProfessionalService">Professional Service</option>
-                  <option value="Restaurant">Restaurant</option>
-                  <option value="Store">Store / Retail</option>
-                  <option value="MedicalBusiness">Medical Business</option>
-                  <option value="FinancialService">Financial Service</option>
-                  <option value="LegalService">Legal Service</option>
-                  <option value="AutomotiveBusiness">Automotive Business</option>
-                  <option value="Organization">Organization (non-local)</option>
-                </select>
-              </div>
-              <div class="control-group">
-                <div class="control-label"><span>Phone</span></div>
-                <input type="tel" class="text-input" id="schema-biz-phone" placeholder="(555) 123-4567">
-              </div>
-              <div class="control-group">
-                <div class="control-label"><span>Street Address</span></div>
-                <input type="text" class="text-input" id="schema-biz-street" placeholder="123 Main Street">
-              </div>
-              <div class="biz-row">
-                <div class="control-group">
-                  <div class="control-label"><span>City</span></div>
-                  <input type="text" class="text-input" id="schema-biz-city" placeholder="Portland">
-                </div>
-                <div class="control-group">
-                  <div class="control-label"><span>State</span></div>
-                  <input type="text" class="text-input" id="schema-biz-state" placeholder="OR">
-                </div>
-              </div>
-              <div class="biz-row">
-                <div class="control-group">
-                  <div class="control-label"><span>ZIP Code</span></div>
-                  <input type="text" class="text-input" id="schema-biz-zip" placeholder="97201">
-                </div>
-                <div class="control-group">
-                  <div class="control-label"><span>Logo URL</span></div>
-                  <input type="url" class="text-input" id="schema-biz-logo" placeholder="https://example.com/logo.png">
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Generate Button -->
@@ -7020,19 +6912,37 @@
 
     let schemaResults = [];
 
-    // Collect business info from form
-    function getBusinessInfo() {
-      const name = document.getElementById('schema-biz-name').value.trim();
-      const type = document.getElementById('schema-biz-type').value;
-      const phone = document.getElementById('schema-biz-phone').value.trim();
-      const street = document.getElementById('schema-biz-street').value.trim();
-      const city = document.getElementById('schema-biz-city').value.trim();
-      const state = document.getElementById('schema-biz-state').value.trim();
-      const zip = document.getElementById('schema-biz-zip').value.trim();
-      const logo = document.getElementById('schema-biz-logo').value.trim();
-      const hasAddress = street || city || state || zip;
-      if (!name && !type && !phone && !hasAddress) return null;
-      return { name, type: type || 'LocalBusiness', phone, street, city, state, zip, logo, hasAddress };
+    // Auto-extract business name from a page's existing schema or title
+    function extractBusinessName(htmlText) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, 'text/html');
+      // Strategy 1: Look for existing JSON-LD with Organization/LocalBusiness name
+      const ldScripts = doc.querySelectorAll('script[type="application/ld+json"]');
+      for (const s of ldScripts) {
+        try {
+          const data = JSON.parse(s.textContent);
+          // Could be a single object or array
+          const items = Array.isArray(data) ? data : [data];
+          for (const item of items) {
+            if (item['@type'] && (item['@type'].includes('LocalBusiness') || item['@type'].includes('Organization') || item['@type'] === 'LocalBusiness' || item['@type'] === 'Organization') && item.name) {
+              return item.name;
+            }
+          }
+        } catch(e) {}
+      }
+      // Strategy 2: Parse og:site_name
+      const ogSiteName = doc.querySelector('meta[property="og:site_name"]')?.getAttribute('content')?.trim();
+      if (ogSiteName) return ogSiteName;
+      // Strategy 3: Extract from title (often "Page Name - Business Name" or "Page Name | Business Name")
+      const title = doc.querySelector('title')?.textContent?.trim() || '';
+      const separators = [' | ', ' - ', ' – ', ' — '];
+      for (const sep of separators) {
+        if (title.includes(sep)) {
+          const parts = title.split(sep);
+          return parts[parts.length - 1].trim(); // Business name is usually last
+        }
+      }
+      return '';
     }
 
     // Classify a page by its URL path and meta content
@@ -7110,36 +7020,6 @@
       return map[pageType] || map.generic;
     }
 
-    // Build Organization or LocalBusiness schema
-    function buildOrgSchema(siteUrl, bizInfo) {
-      const isLocal = bizInfo.type !== 'Organization';
-      const schema = {
-        '@type': isLocal ? bizInfo.type : 'Organization',
-        name: bizInfo.name || new URL(siteUrl).hostname,
-        url: siteUrl,
-      };
-      if (bizInfo.logo) schema.logo = bizInfo.logo;
-      if (bizInfo.phone) schema.telephone = bizInfo.phone;
-      if (bizInfo.hasAddress) {
-        schema.address = {
-          '@type': 'PostalAddress',
-        };
-        if (bizInfo.street) schema.address.streetAddress = bizInfo.street;
-        if (bizInfo.city) schema.address.addressLocality = bizInfo.city;
-        if (bizInfo.state) schema.address.addressRegion = bizInfo.state;
-        if (bizInfo.zip) schema.address.postalCode = bizInfo.zip;
-        schema.address.addressCountry = 'US';
-      }
-      if (bizInfo.phone) {
-        schema.contactPoint = {
-          '@type': 'ContactPoint',
-          telephone: bizInfo.phone,
-          contactType: 'customer service',
-        };
-      }
-      return schema;
-    }
-
     // Extract FAQ Q&A pairs from HTML doc
     function extractFaqPairs(doc) {
       const pairs = [];
@@ -7175,11 +7055,11 @@
     }
 
     // Generate JSON-LD schema for a page
-    function generateSchemaForPage(url, meta, pageType, bizInfo, siteUrl) {
+    function generateSchemaForPage(url, meta, pageType, bizName, siteUrl) {
       const schemas = [];
       const origin = new URL(siteUrl).origin;
 
-      // Breadcrumb for all pages
+      // Breadcrumb for all pages with a path
       const pathParts = new URL(url).pathname.split('/').filter(Boolean);
       if (pathParts.length > 0) {
         const breadcrumb = {
@@ -7204,20 +7084,13 @@
 
       switch (pageType) {
         case 'homepage': {
-          // WebSite with SearchAction
-          const website = {
+          // WebSite schema (Organization/LocalBusiness is handled by Duda)
+          schemas.push({
             '@context': 'https://schema.org',
             '@type': 'WebSite',
-            name: meta.title || (bizInfo ? bizInfo.name : new URL(siteUrl).hostname),
+            name: bizName || meta.title || new URL(siteUrl).hostname,
             url: origin + '/',
-          };
-          schemas.push(website);
-
-          // Organization/LocalBusiness
-          if (bizInfo) {
-            const org = { '@context': 'https://schema.org', ...buildOrgSchema(siteUrl, bizInfo) };
-            schemas.push(org);
-          }
+          });
           break;
         }
         case 'about': {
@@ -7232,17 +7105,13 @@
           break;
         }
         case 'contact': {
-          const contactPage = {
+          schemas.push({
             '@context': 'https://schema.org',
             '@type': 'ContactPage',
             name: meta.title || 'Contact',
             description: meta.description || '',
             url: url,
-          };
-          if (bizInfo) {
-            contactPage.mainEntity = buildOrgSchema(siteUrl, bizInfo);
-          }
-          schemas.push(contactPage);
+          });
           break;
         }
         case 'faq': {
@@ -7286,13 +7155,9 @@
           if (meta.ogImage) article.image = meta.ogImage;
           if (meta.publishedDate) article.datePublished = meta.publishedDate;
           if (meta.modifiedDate) article.dateModified = meta.modifiedDate;
-          if (bizInfo) {
-            article.author = { '@type': 'Organization', name: bizInfo.name };
-            article.publisher = {
-              '@type': 'Organization',
-              name: bizInfo.name,
-              ...(bizInfo.logo ? { logo: { '@type': 'ImageObject', url: bizInfo.logo } } : {}),
-            };
+          if (bizName) {
+            article.author = { '@type': 'Organization', name: bizName };
+            article.publisher = { '@type': 'Organization', name: bizName };
           }
           schemas.push(article);
           break;
@@ -7315,12 +7180,8 @@
             description: meta.description || '',
             url: url,
           };
-          if (bizInfo) {
-            service.provider = {
-              '@type': bizInfo.type || 'Organization',
-              name: bizInfo.name,
-              url: origin + '/',
-            };
+          if (bizName) {
+            service.provider = { '@type': 'Organization', name: bizName, url: origin + '/' };
           }
           if (meta.ogImage) service.image = meta.ogImage;
           schemas.push(service);
@@ -7345,8 +7206,8 @@
             url: url,
           };
           if (meta.ogImage) product.image = meta.ogImage;
-          if (bizInfo) {
-            product.brand = { '@type': 'Organization', name: bizInfo.name };
+          if (bizName) {
+            product.brand = { '@type': 'Organization', name: bizName };
           }
           schemas.push(product);
           break;
@@ -7362,7 +7223,6 @@
           break;
         }
         default: {
-          // Generic WebPage
           schemas.push({
             '@context': 'https://schema.org',
             '@type': 'WebPage',
@@ -7428,7 +7288,7 @@
       let siteUrl = siteUrlInput;
       if (!siteUrl.startsWith('http')) siteUrl = 'https://' + siteUrl;
 
-      const bizInfo = getBusinessInfo();
+      let bizName = '';
       let urlsToScan = [];
 
       try {
@@ -7490,9 +7350,13 @@
         try {
           const { response } = await fetchWithRetry(pageUrl, 1);
           const htmlText = await response.text();
+          // Auto-detect business name from the first page (usually homepage)
+          if (!bizName && i === 0) {
+            bizName = extractBusinessName(htmlText);
+          }
           const meta = extractSchemaMeta(htmlText, pageUrl);
           const pageType = classifyPage(pageUrl, meta);
-          const schemas = generateSchemaForPage(pageUrl, meta, pageType, bizInfo, siteOrigin);
+          const schemas = generateSchemaForPage(pageUrl, meta, pageType, bizName, siteOrigin);
 
           schemaResults.push({
             url: pageUrl,
