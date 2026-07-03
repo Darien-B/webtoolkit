@@ -3448,10 +3448,12 @@
       }
       isProcessing = true;
       
-      // Mark every item as processing so the UI shows spinners immediately
+      // Mark items that will be processed so the UI shows spinners
       converterQueue.forEach(item => {
-        item.isProcessing = true;
-        updateQueueItemUIStatus(item);
+        if (!applyToSelected || item.selected) {
+          item.isProcessing = true;
+          updateQueueItemUIStatus(item);
+        }
       });
       
       const qualitySlider = document.getElementById('input-quality');
