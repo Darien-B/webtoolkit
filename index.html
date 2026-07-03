@@ -2158,7 +2158,7 @@
         <div class="how-to-use-body">
           <ol>
             <li><strong>Add images</strong> - Drag and drop images (PNG, JPG, GIF, AVIF, HEIC, or WebP) into the upload zone, or click to browse files</li>
-            <li><strong>Adjust settings</strong> - Use the left panel to set WebP quality (1-100%), resize scaling, and optional filename suffix</li>
+            <li><strong>Adjust settings</strong> - Use the left panel to set max WebP quality (1-100%), resize scaling, and optional filename suffix. Quality auto-adjusts per image to guarantee at least 20% file savings</li>
             <li><strong>Preview results</strong> - Each image shows original vs. compressed size with percentage saved. Click the compare icon to see a side-by-side visual comparison</li>
             <li><strong>Download</strong> - Download individual files or click "Download All as ZIP" to get everything in one file</li>
           </ol>
@@ -2180,10 +2180,10 @@
           <!-- Quality Slider -->
           <div class="control-group">
             <div class="control-label">
-              <span>WebP Quality</span>
-              <span class="control-value" id="quality-val">82%</span>
+              <span>Max Quality</span>
+              <span class="control-value" id="quality-val">100%</span>
             </div>
-            <input type="range" class="slider" id="input-quality" min="1" max="100" value="82" oninput="updateSettingLabel('quality', this.value + '%')">
+            <input type="range" class="slider" id="input-quality" min="1" max="100" value="100" oninput="updateSettingLabel('quality', this.value + '%')">
           </div>
           
           <!-- Resize Scaling Slider -->
@@ -2307,7 +2307,7 @@
           
           <div class="control-group">
             <div class="control-label">
-              <span>WebP Quality</span>
+              <span>Max Quality</span>
               <span class="control-value" id="opt-quality-val">100%</span>
             </div>
             <input type="range" class="slider" id="opt-quality" min="1" max="100" value="100" oninput="updateSettingLabel('opt-quality', this.value + '%')">
@@ -2469,7 +2469,7 @@
           
           <div class="control-group">
             <div class="control-label">
-              <span>WebP Quality</span>
+              <span>Max Quality</span>
               <span class="control-value" id="grab-quality-val">100%</span>
             </div>
             <input type="range" class="slider" id="grab-quality" min="1" max="100" value="100" oninput="updateSettingLabel('grab-quality', this.value + '%')">
@@ -3336,7 +3336,8 @@
           convertedSize: 0,
           convertedUrl: null,
           isProcessing: true,
-          error: null
+          error: null,
+          actualQuality: null
         };
         
         converterQueue.push(queueItem);
@@ -3381,8 +3382,10 @@
             item.originalImg = await loadImageElement(item.originalUrl);
           }
           
-          // Perform Canvas WebP compression
-          const webpBlob = await compressImageToWebP(item.originalImg, quality, resizeScale);
+          // Perform adaptive WebP compression (targets 20% savings)
+          const { blob: webpBlob, qualityUsed } = await compressImageAdaptive(
+            item.originalImg, quality, resizeScale, item.originalSize
+          );
           
           // Free previous object URL to prevent memory leaks
           if (item.convertedUrl) {
@@ -3392,6 +3395,7 @@
           item.convertedBlob = webpBlob;
           item.convertedSize = webpBlob.size;
           item.convertedUrl = URL.createObjectURL(webpBlob);
+          item.actualQuality = qualityUsed;
           item.isProcessing = false;
           item.error = null;
         } catch (e) {
@@ -3511,10 +3515,12 @@
         badgeText = 'Same Size';
       }
       
+      const qualityNote = item.actualQuality != null ? ` @ ${Math.round(item.actualQuality * 100)}%` : '';
+      
       detailsNode.innerHTML = `
         <span>Original: ${formatBytes(item.originalSize)}</span>
         <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">arrow_forward</span>
-        <span style="font-weight: 700; color: #fff;">WebP: ${formatBytes(item.convertedSize)}</span>
+        <span style="font-weight: 700; color: #fff;">WebP: ${formatBytes(item.convertedSize)}${qualityNote}</span>
         <span class="badge ${badgeClass}">
           ${badgeText}
         </span>
@@ -3602,7 +3608,7 @@
       });
     }
 
-    // Primary canvas image compression
+    // Low-level canvas image compression (single quality pass)
     function compressImageToWebP(img, quality, resizeScale) {
       return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
@@ -3628,6 +3634,56 @@
           resolve(blob);
         }, 'image/webp', clampedQuality);
       });
+    }
+
+    /**
+     * Adaptive quality compression — finds the highest quality
+     * (up to maxQuality) that achieves at least targetSavingsPct
+     * savings vs the original file size. Uses binary search so
+     * overhead is at most ~5 extra toBlob calls, and only when
+     * the max quality doesn't already hit the savings target.
+     *
+     * @param {HTMLImageElement} img         - decoded image element
+     * @param {number}           maxQuality  - ceiling quality 0-1
+     * @param {number}           resizeScale - scale factor 0-1
+     * @param {number}           originalSize - original file size in bytes
+     * @param {number}           targetSavingsPct - minimum % savings (default 20)
+     * @returns {Promise<{blob: Blob, qualityUsed: number}>}
+     */
+    async function compressImageAdaptive(img, maxQuality, resizeScale, originalSize, targetSavingsPct = 20) {
+      // First try at the user's max quality setting
+      const firstBlob = await compressImageToWebP(img, maxQuality, resizeScale);
+      const firstSavings = ((originalSize - firstBlob.size) / originalSize) * 100;
+      
+      // If we already hit the target, return immediately (zero overhead)
+      if (firstSavings >= targetSavingsPct) {
+        return { blob: firstBlob, qualityUsed: Math.min(maxQuality, 0.99) };
+      }
+      
+      // Binary search: find the highest quality that hits the target
+      const QUALITY_FLOOR = 0.50; // never go below 50% quality
+      let lo = QUALITY_FLOOR;
+      let hi = maxQuality;
+      let bestBlob = firstBlob;
+      let bestQuality = Math.min(maxQuality, 0.99);
+      
+      for (let iter = 0; iter < 5; iter++) {
+        const mid = (lo + hi) / 2;
+        const blob = await compressImageToWebP(img, mid, resizeScale);
+        const savings = ((originalSize - blob.size) / originalSize) * 100;
+        
+        if (savings >= targetSavingsPct) {
+          // This quality is good enough — try higher for better quality
+          bestBlob = blob;
+          bestQuality = Math.min(mid, 0.99);
+          lo = mid;
+        } else {
+          // Still too large — try lower quality
+          hi = mid;
+        }
+      }
+      
+      return { blob: bestBlob, qualityUsed: bestQuality };
     }
 
     // Batch download all successfully compressed images as ZIP
@@ -3984,10 +4040,10 @@
           // Image element builder
           const imgEl = await loadImageElement(dataUrl);
           
-          // Canvas to WebP blob conversion
-          const webpBlob = await compressImageToWebP(imgEl, quality, 1.0);
-          
+          // Adaptive WebP compression (targets 20% savings)
           const origSize = imgItem.fileObj.size;
+          const { blob: webpBlob, qualityUsed } = await compressImageAdaptive(imgEl, quality, 1.0, origSize);
+          
           const webpSize = webpBlob.size;
           const savings = origSize - webpSize;
           totalSavingsBytes += savings;
@@ -3995,7 +4051,8 @@
           convertedCount++;
           
           const savingsPct = Math.round((savings / origSize) * 100);
-          logConsole('success', `  Success: ${imgItem.name} -> WebP (Saved ${savingsPct > 0 ? savingsPct : 0}%, size: ${formatBytes(webpSize)})`);
+          const qualityLabel = Math.round(qualityUsed * 100);
+          logConsole('success', `  Success: ${imgItem.name} -> WebP @ ${qualityLabel}% (Saved ${savingsPct > 0 ? savingsPct : 0}%, size: ${formatBytes(webpSize)})`);
           
           const webpName = imgItem.name.substring(0, imgItem.name.lastIndexOf('.')) + '.webp';
           const relativeWebPPath = imgItem.path.substring(0, imgItem.path.lastIndexOf('.')) + '.webp';
@@ -5081,7 +5138,7 @@
               continue;
             }
             
-            const webpBlob = await compressImageToWebP(imgEl, quality, 1.0);
+            const { blob: webpBlob } = await compressImageAdaptive(imgEl, quality, 1.0, blob.size);
             URL.revokeObjectURL(objUrl);
             
             const baseName = item.name.substring(0, item.name.lastIndexOf('.')) || item.name;
