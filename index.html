@@ -611,6 +611,11 @@
       background: rgba(255,255,255,0.08);
       color: var(--text-secondary);
     }
+
+    .badge-increase {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
     
     .image-actions {
       display: flex;
@@ -2176,9 +2181,9 @@
           <div class="control-group">
             <div class="control-label">
               <span>WebP Quality</span>
-              <span class="control-value" id="quality-val">100%</span>
+              <span class="control-value" id="quality-val">82%</span>
             </div>
-            <input type="range" class="slider" id="input-quality" min="1" max="100" value="100" oninput="updateSettingLabel('quality', this.value + '%')">
+            <input type="range" class="slider" id="input-quality" min="1" max="100" value="82" oninput="updateSettingLabel('quality', this.value + '%')">
           </div>
           
           <!-- Resize Scaling Slider -->
@@ -3489,15 +3494,29 @@
       // Success Render State
       const savingPct = Math.round(((item.originalSize - item.convertedSize) / item.originalSize) * 100);
       const isCompressedSmaller = savingPct > 0;
+      const isLarger = item.convertedSize > item.originalSize;
+      const increasePct = isLarger ? Math.round(((item.convertedSize - item.originalSize) / item.originalSize) * 100) : 0;
       
       previewNode.innerHTML = `<img src="${item.convertedUrl}" alt="WebP preview">`;
+      
+      let badgeClass, badgeText;
+      if (isCompressedSmaller) {
+        badgeClass = 'badge-saving';
+        badgeText = `${savingPct}% Saved`;
+      } else if (isLarger) {
+        badgeClass = 'badge-increase';
+        badgeText = `${increasePct}% Larger`;
+      } else {
+        badgeClass = 'badge-neutral';
+        badgeText = 'Same Size';
+      }
       
       detailsNode.innerHTML = `
         <span>Original: ${formatBytes(item.originalSize)}</span>
         <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">arrow_forward</span>
         <span style="font-weight: 700; color: #fff;">WebP: ${formatBytes(item.convertedSize)}</span>
-        <span class="badge ${isCompressedSmaller ? 'badge-saving' : 'badge-neutral'}">
-          ${isCompressedSmaller ? `${savingPct}% Saved` : '0% Saved'}
+        <span class="badge ${badgeClass}">
+          ${badgeText}
         </span>
       `;
       
@@ -3530,7 +3549,13 @@
       const downloadAllBtn = document.getElementById('btn-download-all');
       
       if (totalCount > 0) {
-        statsText.innerText = `${processedCount}/${totalCount} Converted (${formatBytes(totalConvertedBytes)} vs ${formatBytes(totalOriginalBytes)}, saved ${savingsPct}%)`;
+        let savingsLabel;
+        if (savingsPct >= 0) {
+          savingsLabel = `saved ${savingsPct}%`;
+        } else {
+          savingsLabel = `increased ${Math.abs(savingsPct)}% - lower quality`;
+        }
+        statsText.innerText = `${processedCount}/${totalCount} Converted (${formatBytes(totalConvertedBytes)} vs ${formatBytes(totalOriginalBytes)}, ${savingsLabel})`;
         downloadAllBtn.disabled = processedCount === 0;
       } else {
         statsText.innerText = '0 files selected';
