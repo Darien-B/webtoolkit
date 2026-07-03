@@ -3749,6 +3749,7 @@
         const card = document.getElementById(id);
         if (card) card.classList.toggle('selected-item', checked);
       }
+      syncSliderToSelection();
     }
 
     // Select or deselect all queue items
@@ -3758,6 +3759,21 @@
       converterQueue.forEach(item => {
         if (!item.isProcessing) updateQueueItemUIStatus(item);
       });
+      syncSliderToSelection();
+    }
+
+    // Sync quality slider to match the selected image(s)
+    function syncSliderToSelection() {
+      if (!applyToSelected) return;
+      const selected = converterQueue.filter(i => i.selected && i.actualQuality != null);
+      if (selected.length === 0) return;
+      
+      // Use the lowest quality among selected items
+      const quality = Math.min(...selected.map(i => i.actualQuality));
+      const sliderVal = Math.round(quality * 100);
+      
+      document.getElementById('input-quality').value = sliderVal;
+      document.getElementById('quality-val').innerText = sliderVal + '%';
     }
 
     // Helper Image Loader Element
