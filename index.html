@@ -3114,6 +3114,7 @@
     let rootDirectoryHandle = null;
     let fallbackMode = false;
     let isProcessing = false;
+    let needsReprocess = false;
 
     // Page Load Setup
     window.addEventListener('DOMContentLoaded', () => {
@@ -3345,8 +3346,19 @@
 
     // Process all queue item conversions asynchronously
     async function processAllQueueItems() {
-      if (isProcessing) return;
+      if (isProcessing) {
+        // A compression pass is already running — flag it so the current
+        // pass re-runs with the latest slider values when it finishes.
+        needsReprocess = true;
+        return;
+      }
       isProcessing = true;
+      
+      // Mark every item as processing so the UI shows spinners immediately
+      converterQueue.forEach(item => {
+        item.isProcessing = true;
+        updateQueueItemUIStatus(item);
+      });
       
       const quality = parseFloat(document.getElementById('input-quality').value) / 100;
       const resizeScale = parseFloat(document.getElementById('input-scale').value) / 100;
@@ -3357,10 +3369,6 @@
       
       for (let i = 0; i < converterQueue.length; i++) {
         const item = converterQueue[i];
-        
-        // Set individual item status to processing
-        item.isProcessing = true;
-        updateQueueItemUIStatus(item);
         
         try {
           // Load image element
@@ -3404,6 +3412,13 @@
       
       // Update statistics & control statuses
       updateQueueStats();
+      
+      // If a slider event arrived while we were processing, re-run
+      // with the latest values so the output stays in sync.
+      if (needsReprocess) {
+        needsReprocess = false;
+        processAllQueueItems();
+      }
     }
 
     // Render HTML components inside conversion list queue
