@@ -2183,7 +2183,7 @@
               <span>Max Quality</span>
               <span class="control-value" id="quality-val">100%</span>
             </div>
-            <input type="range" class="slider" id="input-quality" min="1" max="100" value="100" oninput="updateSettingLabel('quality', this.value + '%')">
+            <input type="range" class="slider" id="input-quality" min="1" max="100" value="100" oninput="autoQualityMode = false; updateSettingLabel('quality', this.value + '%')">
           </div>
           
           <!-- Resize Scaling Slider -->
@@ -3120,6 +3120,7 @@
     let fallbackMode = false;
     let isProcessing = false;
     let needsReprocess = false;
+    let autoQualityMode = true;  // true = auto-find quality on upload; false = user manually set slider
 
     // Page Load Setup
     window.addEventListener('DOMContentLoaded', () => {
@@ -3366,12 +3367,15 @@
         updateQueueItemUIStatus(item);
       });
       
-      const quality = parseFloat(document.getElementById('input-quality').value) / 100;
+      const qualitySlider = document.getElementById('input-quality');
+      const quality = parseFloat(qualitySlider.value) / 100;
       const resizeScale = parseFloat(document.getElementById('input-scale').value) / 100;
       
       const progressContainer = document.getElementById('converter-progress-container');
       const progressBar = document.getElementById('converter-progress-bar');
       progressContainer.style.display = 'block';
+      
+      let lowestQualityUsed = 1.0;
       
       for (let i = 0; i < converterQueue.length; i++) {
         const item = converterQueue[i];
@@ -3382,10 +3386,23 @@
             item.originalImg = await loadImageElement(item.originalUrl);
           }
           
-          // Perform adaptive WebP compression (targets 20% savings)
-          const { blob: webpBlob, qualityUsed } = await compressImageAdaptive(
-            item.originalImg, quality, resizeScale, item.originalSize
-          );
+          let webpBlob, qualityUsed;
+          
+          if (autoQualityMode) {
+            // Auto mode: find best quality that saves at least 20%
+            const result = await compressImageAdaptive(
+              item.originalImg, quality, resizeScale, item.originalSize
+            );
+            webpBlob = result.blob;
+            qualityUsed = result.qualityUsed;
+            if (qualityUsed < lowestQualityUsed) {
+              lowestQualityUsed = qualityUsed;
+            }
+          } else {
+            // Manual mode: user set the slider, compress at exactly that quality
+            webpBlob = await compressImageToWebP(item.originalImg, quality, resizeScale);
+            qualityUsed = Math.min(quality, 0.99);
+          }
           
           // Free previous object URL to prevent memory leaks
           if (item.convertedUrl) {
@@ -3409,6 +3426,13 @@
         progressBar.style.width = `${progressPct}%`;
         
         updateQueueItemUIStatus(item);
+      }
+      
+      // In auto mode, move the slider to the quality that was actually used
+      if (autoQualityMode && converterQueue.length > 0) {
+        const sliderVal = Math.round(lowestQualityUsed * 100);
+        qualitySlider.value = sliderVal;
+        document.getElementById('quality-val').innerText = sliderVal + '%';
       }
       
       // Finish progress bar
@@ -3593,6 +3617,10 @@
         if (item.convertedUrl) URL.revokeObjectURL(item.convertedUrl);
       });
       converterQueue = [];
+      autoQualityMode = true;  // Reset for next batch
+      // Reset slider to 100% for next auto-detection
+      document.getElementById('input-quality').value = 100;
+      document.getElementById('quality-val').innerText = '100%';
       renderQueueList();
       updateQueueStats();
       document.getElementById('btn-clear-queue').disabled = true;
