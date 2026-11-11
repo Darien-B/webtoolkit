@@ -22,6 +22,7 @@ A premium, high-fidelity local utility built with raw HTML, Vanilla CSS, and mod
    - Target any public URL (e.g., plan page galleries) and scan it client-side.
    - Filter and isolate target images using custom CSS Selectors (e.g. `img`, `.gallery img`, or `.swiper-slide img`).
    - Resolves inline, relative, standard, and modern lazy-loaded attributes (`src`, `data-src`, `data-lazy-src`, `srcset` resolution scaling).
+   - On a Duda dynamic page (one page per collection row, e.g. a home plan page), reads the galleries a widget builds from that row at runtime, which are not in the page's HTML, and lists each gallery tab as its own section.
    - Prevents canvas sandboxing issues by downloading image Blobs via a client-side CORS proxy (`corsproxy.io`) before canvas loading, allowing fully un-tainted conversion and ZIP compilation of selected images.
 
 4. **Multi-Browser Drag-and-Drop Fallback**:

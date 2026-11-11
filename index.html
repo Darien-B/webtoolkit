@@ -4931,7 +4931,11 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
         const uniqueUrls = new Set();
-        
+
+        // Duda dynamic pages: galleries built from the page's collection row
+        // by JavaScript are not in the HTML, so read them from the row itself
+        addDudaRowGalleries(htmlText, doc, urlInput, uniqueUrls);
+
         // Scan ALL images, links-to-images, and background-image elements
         const imgElements = doc.querySelectorAll('img, source[srcset], a[href]');
         
@@ -5036,6 +5040,126 @@
       document.getElementById('btn-clear-grabber').disabled = true;
     }
 
+    // Decode base64 that holds UTF-8 text (atob alone garbles accented letters)
+    function decodeBase64Utf8(b64) {
+      const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      return new TextDecoder('utf-8').decode(bytes);
+    }
+
+    // Normalise one collection value (a URL string, or an object such as
+    // { image, title, description }) to an image URL, or '' if it is not one
+    function collectionImageUrl(raw) {
+      let url = '';
+      if (typeof raw === 'string') {
+        url = raw;
+      } else if (raw && typeof raw === 'object') {
+        url = raw.image || raw.src || raw.originalUrl || raw.url || raw.imageUrl || raw.href || raw.value || '';
+        if (url && typeof url === 'object') url = url.src || url.url || '';
+      }
+      url = String(url || '').trim();
+      return /^https?:\/\/\S+\.(png|jpe?g|webp|avif|gif|svg)(\?\S*)?$/i.test(url) ? url : '';
+    }
+
+    // Duda dynamic pages (one page per collection row, e.g. /plans/aspen):
+    // a gallery a widget builds from the row exists only after the page's
+    // JavaScript runs, so the fetched HTML has no <img> for it. Duda embeds the
+    // row in the page as base64 JSON (window.Parameters.DynamicPageInfo
+    // .base64JsonRowData), so read the gallery fields from that. A field counts
+    // when it is a list holding image URLs ("Gallery - Exterior",
+    // "Gallery - 1 - Customer Homes") or one image named "Image - {n} - {Tab}".
+    // Each tab is its own Gallery section, in the order a widget's tabOrder
+    // setting lists them, then the row's own order. Returns how many were added.
+    function addDudaRowGalleries(htmlText, doc, pageUrl, uniqueUrls) {
+      const match = htmlText.match(/base64JsonRowData\s*:\s*['"]([A-Za-z0-9+\/=]+)['"]/);
+      if (!match) return 0;
+      let row;
+      try {
+        row = JSON.parse(decodeBase64Utf8(match[1]));
+      } catch (e) {
+        console.warn('[Image Grabber] Could not read the Duda collection row', e);
+        return 0;
+      }
+      if (!row || typeof row !== 'object' || Array.isArray(row)) return 0;
+
+      // Tab order from any widget config on the page (base64 JSON on Duda)
+      const tabOrder = [];
+      doc.querySelectorAll('[data-widget-config]').forEach(el => {
+        try {
+          const config = JSON.parse(decodeBase64Utf8(el.getAttribute('data-widget-config')));
+          String(config.tabOrder || '').split(',').forEach(name => {
+            const key = name.trim().toLowerCase();
+            if (key && !tabOrder.includes(key)) tabOrder.push(key);
+          });
+        } catch (e) { /* not a base64 JSON config */ }
+      });
+
+      const tabs = new Map(); // tab key -> { label, firstSeen, entries: [{ num, urls }] }
+      Object.keys(row).forEach((field, fieldIndex) => {
+        const value = row[field];
+        let tabName, num, urls;
+        const single = field.match(/^image\s*-\s*(\d+)\s*-\s*(.+)$/i);
+        if (Array.isArray(value)) {
+          urls = value.map(collectionImageUrl).filter(Boolean);
+          const named = field.match(/^gallery\s*-\s*(?:(\d+)\s*-\s*)?(.+)$/i);
+          tabName = named ? named[2].trim() : field.trim();
+          num = named && named[1] ? parseInt(named[1], 10) : 0;
+        } else if (single) {
+          urls = [collectionImageUrl(value)].filter(Boolean);
+          tabName = single[2].trim();
+          num = parseInt(single[1], 10);
+        } else {
+          return;
+        }
+        if (!urls.length) return;
+        const key = tabName.toLowerCase();
+        if (!tabs.has(key)) tabs.set(key, { label: tabName, firstSeen: fieldIndex, entries: [] });
+        tabs.get(key).entries.push({ num, urls });
+      });
+
+      const orderOf = key => {
+        const i = tabOrder.indexOf(key);
+        return i === -1 ? tabOrder.length + tabs.get(key).firstSeen : i;
+      };
+
+      let added = 0;
+      [...tabs.keys()].sort((a, b) => orderOf(a) - orderOf(b)).forEach(key => {
+        const tab = tabs.get(key);
+        const urls = tab.entries.sort((a, b) => a.num - b.num).flatMap(e => e.urls);
+        let sectionKey = null;
+        urls.forEach(url => {
+          const absoluteUrl = makeAbsoluteURL(pageUrl, url);
+          if (uniqueUrls.has(absoluteUrl)) return; // also in an earlier tab
+          uniqueUrls.add(absoluteUrl);
+
+          if (!sectionKey) {
+            galleryCounter++;
+            sectionKey = `gallery_${galleryCounter}`;
+            galleryContainerMap.set(`duda-row:${key}`, { key: sectionKey, label: `Gallery: ${tab.label}` });
+          }
+
+          let filename = absoluteUrl.substring(absoluteUrl.lastIndexOf('/') + 1).split('?')[0].split('#')[0];
+          if (!filename || !filename.includes('.')) filename = 'image_' + Math.random().toString(36).substr(2, 5) + '.jpg';
+
+          const imgIndex = scrapedImages.length;
+          scrapedImages.push({
+            id: 'scr_' + Math.random().toString(36).substr(2, 9),
+            absoluteUrl,
+            name: filename,
+            selected: false,
+            isWebP: filename.toLowerCase().endsWith('.webp'),
+            section: sectionKey
+          });
+
+          if (!scrapedSections[sectionKey]) scrapedSections[sectionKey] = [];
+          scrapedSections[sectionKey].push(imgIndex);
+          added++;
+        });
+      });
+
+      if (added) console.log(`[Image Grabber] ${added} gallery images read from the page's Duda collection row`);
+      return added;
+    }
+
     // Helper parser for srcset configurations
     function parseLargestSrcset(srcset) {
       if (!srcset) return null;
@@ -5086,8 +5210,9 @@
       // Build section order: galleries first (sorted), then sliders, then static sections
       const staticOrder = ['hero', 'content', 'sidebar', 'header', 'footer', 'other'];
       const allKeys = Object.keys(scrapedSections);
-      const galleryKeys = allKeys.filter(k => k.startsWith('gallery_')).sort();
-      const sliderKeys = allKeys.filter(k => k.startsWith('slider_')).sort();
+      const byNumber = (a, b) => parseInt(a.split('_')[1], 10) - parseInt(b.split('_')[1], 10);
+      const galleryKeys = allKeys.filter(k => k.startsWith('gallery_')).sort(byNumber);
+      const sliderKeys = allKeys.filter(k => k.startsWith('slider_')).sort(byNumber);
       const staticKeys = staticOrder.filter(k => allKeys.includes(k));
       const activeSections = [...galleryKeys, ...sliderKeys, ...staticKeys];
       
@@ -5110,7 +5235,7 @@
               <span class="material-symbols-outlined">${def.icon}</span>
             </div>
             <div class="section-group-title">
-              <h4>${def.label}</h4>
+              <h4>${escapeHtml(def.label)}</h4>
               <span>${subtitleParts.join(' / ')}</span>
             </div>
             <div class="section-group-actions" onclick="event.stopPropagation()">
@@ -5284,7 +5409,7 @@
       selected.forEach(item => {
         if (!sectionFolders[item.section]) {
           const def = getSectionDef(item.section);
-          sectionFolders[item.section] = zip.folder(def.label.replace(/[^a-zA-Z0-9_\- ]/g, '').trim());
+          sectionFolders[item.section] = zip.folder(def.label.replace(/[^a-zA-Z0-9_\- ]/g, '').replace(/\s+/g, ' ').trim());
         }
       });
       
